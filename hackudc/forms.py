@@ -60,3 +60,8 @@ class ParticipanteForm(forms.ModelForm):
         self.fields["restricciones_alimentarias"].queryset = (
             RestriccionAlimentaria.objects.all().order_by("id_restriccion")
         )
+
+
+class Registro(forms.Form):
+    persona = forms.CharField(label="Correo a registrar", max_length=100)
+    acreditacion = forms.CharField(label="Acreditación a asignar", max_length=6)
