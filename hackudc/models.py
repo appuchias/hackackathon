@@ -34,7 +34,9 @@ class Persona(models.Model):
     dni = models.CharField(max_length=9, unique=True, null=True, blank=True)
     genero = models.CharField(max_length=10, choices=GENEROS, null=True, blank=True)
     notas = models.TextField(null=True, blank=True)
-    uuid = models.UUIDField(unique=True, null=True, blank=True, default=None)
+    uuid = models.CharField(
+        max_length=8, unique=True, null=True, blank=True, default=None
+    )
 
     restricciones_alimentarias = models.ManyToManyField(
         "RestriccionAlimentaria",
