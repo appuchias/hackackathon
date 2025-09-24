@@ -23,6 +23,10 @@ NIVELES_ESTUDIO = (
 )
 
 
+def ruta_cv(instance, filename):
+    return f"cv/{instance.dni}_{instance.correo.replace("@", "-").replace(".", "-")}_pendiente.pdf"
+
+
 # Create your models here.
 class Persona(models.Model):
     correo = models.EmailField(max_length=254, unique=True, primary_key=True)
@@ -67,10 +71,6 @@ class Mentor(Persona):
 
 
 class Participante(Persona):
-    @staticmethod
-    def ruta_cv(instance, filename):
-        return f"cv/{instance.dni}_{instance.correo.replace("@", "-").replace(".", "-")}_pendiente.pdf"
-
     telefono = models.CharField(max_length=16, null=True, blank=True)
     ano_nacimiento = models.PositiveIntegerField(
         null=True,
