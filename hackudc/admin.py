@@ -6,9 +6,18 @@ from hackudc.models import *
 def aceptar_participante(modeladmin, request, queryset):
     queryset.update(aceptado=True)
 
+
 class ParticipanteAdmin(admin.ModelAdmin):
-    list_display = ['correo', 'nombre', 'nombre_estudio', 'centro_estudio', 'ciudad', 'quiere_creditos', 'aceptado']
-    list_filter = ['aceptado', 'centro_estudio', 'ciudad']
+    list_display = [
+        "correo",
+        "nombre",
+        "nombre_estudio",
+        "centro_estudio",
+        "ciudad",
+        "quiere_creditos",
+        "aceptado",
+    ]
+    list_filter = ["aceptado", "centro_estudio", "ciudad"]
     actions = [aceptar_participante]
 
 

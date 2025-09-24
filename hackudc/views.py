@@ -7,10 +7,6 @@ from hackudc.models import Participante
 
 
 # Create your views here.
-def inicio(request: HttpRequest):
-    return redirect("/registro")
-
-
 @require_http_methods(["GET", "POST"])
 def registro(request: HttpRequest):
     if request.method == "GET":
@@ -24,14 +20,9 @@ def registro(request: HttpRequest):
         return render(request, "registro.html", {"form": form})
 
 
-@require_http_methods(["GET"])
-def ruta(request: HttpRequest):
-    return HttpResponse("Nada por aquí")
-
-
 # /gestion/
 def gestion(request: HttpRequest):
-    return render(request, "gestion.html")
+    return render(request, "gestion/index.html")
 
 
 def alta(request: HttpRequest):
@@ -40,19 +31,20 @@ def alta(request: HttpRequest):
     if request.method == "POST":
         form = Registro(request.POST)
         if form.is_valid():
-            participante = Participante.objects.filter(correo=form.cleaned_data["persona"]).first()
+            participante = Participante.objects.filter(
+                correo=form.cleaned_data["persona"]
+            ).first()
             participante.uuid = form.cleaned_data["acreditacion"]
 
             participante.save()
-            return HttpResponse(participante.nombre+'-'+participante.talla_camiseta)
+            return HttpResponse(participante.nombre + "-" + participante.talla_camiseta)
 
-
-    return render(request, "gestion-registro.html", {"form": form})
+    return render(request, "gestion/registro.html", {"form": form})
 
 
 def pases(request: HttpRequest):
-    return render(request, "pases.html")
+    return render(request, "gestion/pases.html")
 
 
 def presencia(request: HttpRequest):
-    return render(request, "presencia.html")
+    return render(request, "gestion/presencia.html")
