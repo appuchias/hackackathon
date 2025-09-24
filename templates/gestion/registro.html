@@ -1,0 +1,6 @@
+<h1>Registro</h1>
+<form action="{% url 'alta' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>

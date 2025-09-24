@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             model_name="participante",
             name="cv",
             field=models.FileField(
-                null=True, upload_to=hackudc.models.Participante.ruta_cv
+                null=True, upload_to=hackudc.models.ruta_cv
             ),
         ),
     ]
