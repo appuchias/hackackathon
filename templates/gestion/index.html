@@ -1,6 +1,12 @@
+<form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+    {% csrf_token %}
+</form>
+
 <ul>
     <li><a href="{% url 'alta' %}">Registro</a></li>
     <li><a href="{% url 'pases' %}">Pases comida</a></li>
     <li><a href="{% url 'presencia' %}">Entrada/Salida</a></li>
     <li>Consulta</li>
+    <br>
+    <li><a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a></li>
 </ul>
