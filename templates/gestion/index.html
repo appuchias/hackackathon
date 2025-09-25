@@ -1,6 +1,16 @@
+<form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+    {% csrf_token %}
+</form>
+
+{% extends 'marco.html' %}
+
+{% block title %}Inicio{% endblock title %}
+
+{% block content %}
 <ul>
     <li><a href="{% url 'alta' %}">Registro</a></li>
     <li><a href="{% url 'pases' %}">Pases comida</a></li>
-    <li><a href="{% url 'presencia' %}">Entrada/Salida</a></li>
+    <li><a href="{% url 'presencia' 'beef16' 'ver' %}">Entrada/Salida</a></li>
     <li>Consulta</li>
 </ul>
+{% endblock content %}

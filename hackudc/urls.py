@@ -7,5 +7,7 @@ urlpatterns = [
     path("gestion", views.gestion, name="gestion"),
     path("gestion/registro", views.alta, name="alta"),
     path("gestion/pases", views.pases, name="pases"),
-    path("gestion/presencia", views.presencia, name="presencia"),
+    path(
+        "gestion/presencia/<str:uuid>/<str:action>", views.presencia, name="presencia"
+    ),
 ]

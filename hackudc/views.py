@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 from hackudc.forms import ParticipanteForm, Registro
-from hackudc.models import Participante
+from hackudc.models import Participante, Pase, Presencia, TipoPase
 
 
 # Create your views here.
@@ -34,6 +36,11 @@ def alta(request: HttpRequest):
             participante = Participante.objects.filter(
                 correo=form.cleaned_data["persona"]
             ).first()
+
+            if not participante.aceptado:
+                return HttpResponse("Participante no aceptado")
+            elif participante.uuid:
+                return HttpResponse("Ya se registró")
             participante.uuid = form.cleaned_data["acreditacion"]
 
             participante.save()
@@ -43,8 +50,41 @@ def alta(request: HttpRequest):
 
 
 def pases(request: HttpRequest):
-    return render(request, "gestion/pases.html")
+    # return render(request, "gestion/pases.html")
+    actual = (
+        TipoPase.objects.filter(inicio_validez__lte=datetime.now())
+        .order_by("inicio_validez")
+        .last()
+    )
+
+    return HttpResponse(actual)
 
 
-def presencia(request: HttpRequest):
-    return render(request, "gestion/presencia.html")
+def presencia(request: HttpRequest, uuid: str, action: str):
+    participante = Participante.objects.filter(uuid=uuid).first()
+    presencias = Presencia.objects.filter(participante=participante)
+
+    if action == 'ver':
+        ultima = presencias.order_by("entrada").last()
+        return HttpResponse(f"{ultima.entrada} - {ultima.salida}")
+
+    ultima = presencias.order_by("entrada").last()
+    if action == 'entrada':
+        # Comprobar que salió
+        if not ultima.salida:
+            return HttpResponse("No salió")
+
+        # Guardar entrada
+        participante = Participante.objects.filter(correo=uuid).first()
+        entrada = Presencia(participante=participante, entrada=datetime.now())
+        entrada.save()
+        return HttpResponse("OK")
+    elif action == 'salida':
+        # Comprobar que entró
+        if ultima.salida:
+            return HttpResponse("No entró")
+
+        # Guardar salida
+        ultima.salida = datetime.now()
+        ultima.save()
+        return HttpResponse("OK")
