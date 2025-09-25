@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
-from hackudc.forms import ParticipanteForm, Registro
+from hackudc.forms import ParticipanteForm, Registro, PaseForm, PresenciaForm
 from hackudc.models import Participante, Pase, Presencia, TipoPase
 
 
@@ -29,6 +29,7 @@ def gestion(request: HttpRequest):
 
 
 @csrf_exempt  # Revisar. ¿Por qué no funciona el csrf en hackudc.local.delthia.com?
+@require_http_methods(["GET", "POST"])
 def alta(request: HttpRequest):
     """Check-in del evento. Asocia un participante a una acreditación
 
@@ -80,42 +81,92 @@ def alta(request: HttpRequest):
     return render(request, "gestion/registro.html", {"form": form})
 
 
+@require_http_methods(["GET", "POST"])
 def pases(request: HttpRequest):
-    # return render(request, "gestion/pases.html")
+    """Pases del evento. Registra un pase y muestra si es la primera vez si ese participante utiliza ese pase"""
     actual = (
         TipoPase.objects.filter(inicio_validez__lte=datetime.now())
         .order_by("inicio_validez")
         .last()
     )
+    mensaje = None
 
-    return HttpResponse(actual)
+    if request.method == "POST":
+        form = PaseForm(request.POST)
+
+        if form.is_valid():
+            datos = form.cleaned_data
+            participante = Participante.objects.filter(
+                uuid=datos["participante"]
+            ).first()
+
+            if not participante:
+                mensaje = "No existe la acreditación"
+            else:
+                pase = Pase(participante=participante, tipo_pase=actual)
+                pase.save()
+                mensaje = "Pase creado"
+        else:
+            return HttpResponse("Error")
+
+    if not actual:
+        return HttpResponse("No hay pases activos")
+
+    form = PaseForm(initial={"tipo_pase": actual})
+    return render(
+        request,
+        "gestion/pases.html",
+        {"pase": actual, "form": form, "mensaje": mensaje},
+    )
 
 
-def presencia(request: HttpRequest, uuid: str, action: str):
-    participante = Participante.objects.filter(uuid=uuid).first()
-    presencias = Presencia.objects.filter(participante=participante)
+@require_http_methods(["GET", "POST"])
+def presencia(request: HttpRequest):
+    mensaje = None
 
-    if action == "ver":
-        ultima = presencias.order_by("entrada").last()
-        return HttpResponse(f"{ultima.entrada} - {ultima.salida}")
+    if request.method == "POST":
+        form = PresenciaForm(request.POST)
 
-    ultima = presencias.order_by("entrada").last()
-    if action == "entrada":
-        # Comprobar que salió
-        if not ultima.salida:
-            return HttpResponse("No salió")
+        if form.is_valid():
+            datos = form.cleaned_data
+            participante = Participante.objects.filter(
+                uuid=datos["participante"]
+            ).first()
+            print(participante)
 
-        # Guardar entrada
-        participante = Participante.objects.filter(correo=uuid).first()
-        entrada = Presencia(participante=participante, entrada=datetime.now())
-        entrada.save()
-        return HttpResponse("OK")
-    elif action == "salida":
-        # Comprobar que entró
-        if ultima.salida:
-            return HttpResponse("No entró")
+            if not participante:
+                mensaje = "No existe la acreditación"
 
-        # Guardar salida
-        ultima.salida = datetime.now()
-        ultima.save()
-        return HttpResponse("OK")
+            presencias = Presencia.objects.filter(participante=participante)
+            ultima = presencias.order_by("entrada").last()
+
+            # Acciones
+            match datos["accion"]:
+                case "v":
+                    ultima = presencias.order_by("entrada").last()
+                    return HttpResponse(f"{ultima.entrada} - {ultima.salida}")
+                case "e":
+                    # Comprobar que salió
+                    if not ultima.salida:
+                        return HttpResponse("No salió")
+
+                    # Guardar entrada
+                    entrada = Presencia(
+                        participante=participante, entrada=datetime.now()
+                    )
+                    entrada.save()
+                    return HttpResponse("OK")
+
+                case "s":
+                    # Comprobar que entró
+                    if ultima.salida:
+                        return HttResponse("No entró")
+
+                    # Guardar salida
+                    ultima.salida = datetime.now()
+                    ultima.save()
+                    return HttpResponse("OK")
+
+    return render(
+        request, "gestion/presencia.html", {"form": PresenciaForm, "mensaje": mensaje}
+    )

@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from django import forms
 
-from hackudc.models import Participante, RestriccionAlimentaria
+from hackudc.models import Participante, RestriccionAlimentaria, TipoPase
 
 
 class ParticipanteForm(forms.ModelForm):
@@ -67,3 +69,24 @@ class Registro(forms.Form):
     acreditacion = forms.CharField(
         label="Acreditación a asignar", max_length=6, required=False
     )
+
+
+class PaseForm(forms.Form):
+    # No funciona siempre el valor inicial. Indicarlo en la vista va bien
+    # tipo_pase = forms.ModelChoiceField(
+    #     queryset=TipoPase.objects.all().order_by("inicio_validez"),
+    #     initial=TipoPase.objects.filter(inicio_validez__lte=datetime.now())
+    #     .order_by("inicio_validez")
+    #     .last(),
+    # )
+    tipo_pase = forms.ModelChoiceField(
+        queryset=TipoPase.objects.all().order_by("inicio_validez")
+    )
+    participante = forms.CharField(label="Acreditación", max_length=6)
+
+
+class PresenciaForm(forms.Form):
+    accion = forms.ChoiceField(
+        choices=(("v", "Ver"), ("e", "Entrada"), ("s", "Salida"))
+    )
+    participante = forms.CharField(label="Acreditación a asignar", max_length=6)

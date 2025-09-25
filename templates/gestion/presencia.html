@@ -1,1 +1,10 @@
 <h1>Presencia</h1>
+{% if mensaje %}
+    <p style="color: red; font-weight: bold;">{{ mensaje }}</p>
+{% endif %}
+
+<form action="{% url 'presencia' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
