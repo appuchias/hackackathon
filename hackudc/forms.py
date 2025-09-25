@@ -64,4 +64,6 @@ class ParticipanteForm(forms.ModelForm):
 
 class Registro(forms.Form):
     persona = forms.CharField(label="Correo a registrar", max_length=100)
-    acreditacion = forms.CharField(label="Acreditación a asignar", max_length=6)
+    acreditacion = forms.CharField(
+        label="Acreditación a asignar", max_length=6, required=False
+    )

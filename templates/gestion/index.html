@@ -1,12 +1,11 @@
-<form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-    {% csrf_token %}
-</form>
-
 {% extends 'marco.html' %}
 
 {% block title %}Inicio{% endblock title %}
 
 {% block content %}
+<form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+    {% csrf_token %}
+</form>
 <ul>
     {% if user.is_superuser %}<li><a href="/admin">Admin</a></li>{% endif %}
     <li><a href="{% url 'alta' %}">Registro</a></li>

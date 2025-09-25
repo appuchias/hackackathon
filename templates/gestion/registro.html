@@ -5,29 +5,12 @@
 
 {% block content %}
 <h1>Registro</h1>
+{% if mensaje %}
+    <p style="color: red; font-weight: bold;">{{ mensaje }}</p>
+{% endif %}
 <form action="{% url 'alta' %}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
-
-<video id="qrvideo" style="width=280px; height: 500px"></video>
-
-<script src="{% static 'js/qr-scanner.umd.min.js' %}"></script>
-<script>
-    videoElem = document.getElementById("qrvideo")
-
-    const qrScanner = new QrScanner(
-        videoElem,
-        result => {
-            document.getElementById("resultado").innerHTML = result;
-        }
-    )
-
-    console.log(QrScanner.hasCamera());
-
-    QrScanner.listCameras();
-
-    qrScanner.start();
-</script>
 {% endblock content %}
