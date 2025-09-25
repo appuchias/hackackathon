@@ -6,6 +6,7 @@ from hackudc import views
 urlpatterns = [
     path("", views.registro, name="registro"),
     path("confirmar-correo/<str:token>", views.confirmar_correo),
+    path("confirmar-plaza/<str:token>", views.confirmar_plaza),
     path("gestion", views.gestion, name="gestion"),
     path("gestion/registro", views.alta, name="alta"),
     path("gestion/pases", views.pases, name="pases"),

@@ -52,6 +52,21 @@ def confirmar_correo(request: HttpRequest, token):
     return HttpResponse("Confirmado")
 
 
+def confirmar_plaza(request: HttpRequest, token):
+    token = Token.objects.filter(uuid=token).first()
+
+    if not token:
+        return HttpResponse("No existe el token")
+
+    persona = token.persona
+    participante = Participante.objects.filter(correo=persona.correo).first()
+    participante.confirmado = True
+    participante.save()
+    token.delete()
+
+    return HttpResponse("Confirmado")
+
+
 # /gestion/
 def gestion(request: HttpRequest):
     return render(request, "gestion/index.html")

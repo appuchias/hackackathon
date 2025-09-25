@@ -100,6 +100,7 @@ class Participante(Persona):
     cv = models.FileField(upload_to=ruta_cv, null=True)
     compartir_cv = models.BooleanField(default=False)
     aceptado = models.BooleanField(default=False)
+    confirmado = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Participante"
