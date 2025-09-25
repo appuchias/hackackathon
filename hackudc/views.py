@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+from django.core.mail import send_mail
 
 from hackudc.forms import ParticipanteForm, Registro
-from hackudc.models import Participante
+from hackudc.models import Participante, Token
 
 
 # Create your views here.
@@ -14,10 +17,39 @@ def registro(request: HttpRequest):
 
     form = ParticipanteForm(request.POST, request.FILES)
     if form.is_valid():
-        form.save()
+        participante = form.save()
+        token = Token(persona=participante, fecha=datetime.now())
+        token.save()
+        print(participante)
+        try:
+            send_mail(
+                "HackUDC 2026 - Confirma tu correo ✉️",
+                f"Hola {form.cleaned_data["nombre"]}. Toma tu token {token.uuid}",
+                "no-reply@gpul.org",
+                (form.cleaned_data["correo"],),
+                fail_silently=False,
+            )
+        except ConnectionRefusedError:
+            return HttpResponse(
+                "Error al mandar el correo. Inténtalo más tarde o contacta con nosotros a través de hackudc@gpul.org"
+            )
         return HttpResponse("OK")
     else:
         return render(request, "registro.html", {"form": form})
+
+
+def confirmar_correo(request: HttpRequest, token):
+    token = Token.objects.filter(uuid=token).first()
+
+    if not token:
+        return HttpResponse("No existe el token")
+
+    participante = token.persona
+    participante.verificado = True
+    participante.save()
+    token.delete()
+
+    return HttpResponse("Confirmado")
 
 
 # /gestion/

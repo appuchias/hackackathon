@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -30,6 +32,7 @@ def ruta_cv(instance, filename):
 # Create your models here.
 class Persona(models.Model):
     correo = models.EmailField(max_length=254, unique=True, primary_key=True)
+    verificado = models.BooleanField(default=False)
     nombre = models.CharField(max_length=100)
     dni = models.CharField(max_length=9, unique=True, null=True, blank=True)
     genero = models.CharField(max_length=10, choices=GENEROS, null=True, blank=True)
@@ -170,3 +173,9 @@ class Pase(models.Model):
 
     def __str__(self):
         return f"Pase '{self.tipo_pase}' de {self.participante.nombre} - {self.tipo_pase.nombre} ({self.fecha})"
+
+
+class Token(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
+    fecha = models.DateTimeField(null=True, blank=True, default=None)

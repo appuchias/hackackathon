@@ -14,10 +14,11 @@ class ParticipanteAdmin(admin.ModelAdmin):
         "nombre_estudio",
         "centro_estudio",
         "ciudad",
+        "verificado",
         "quiere_creditos",
         "aceptado",
     ]
-    list_filter = ["aceptado", "centro_estudio", "ciudad"]
+    list_filter = ["verificado", "aceptado", "centro_estudio", "ciudad"]
     actions = [aceptar_participante]
 
 
