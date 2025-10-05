@@ -37,44 +37,55 @@ def validador_pdf(value):
         raise ValidationError("Error message")
 
 
-# Create your models here.
-class Persona(models.Model):
+class PersonaAbstracta(models.Model):
     correo = models.EmailField(max_length=254, unique=True, primary_key=True)
     nombre = models.CharField(max_length=100)
-    dni = models.CharField(max_length=9, unique=True, null=True, blank=True)
-    genero = models.CharField(max_length=10, choices=GENEROS, null=True, blank=True)
     notas = models.TextField(null=True, blank=True)
-    uuid = models.CharField(
+    acreditacion = models.CharField(
         max_length=8, unique=True, null=True, blank=True, default=None
     )
 
     restricciones_alimentarias = models.ManyToManyField(
         "RestriccionAlimentaria",
         blank=True,
-        related_name="personas",
-        db_table="persona_restriccion_alimentaria",
+        related_name="%(class)ss",
     )
 
+    class Meta:
+        abstract = True
 
-class Patrocinador(Persona):
+
+class Patrocinador(PersonaAbstracta):
     empresa = models.CharField(max_length=100)
 
-    class Meta:
+    class Meta(PersonaAbstracta.Meta):
         verbose_name = "Patrocinador"
         verbose_name_plural = "Patrocinadores"
 
     def __str__(self):
-        return f"{self.nombre} - {self.empresa}"
+        return f"{self.empresa}: {self.nombre}"
 
 
-class Mentor(Persona):
-    tamano_camiseta = models.CharField(
+# Create your models here.
+class Persona(PersonaAbstracta):
+    dni = models.CharField(max_length=9, unique=True, null=True, blank=True)
+    genero = models.CharField(max_length=10, choices=GENEROS, null=True, blank=True)
+    talla_camiseta = models.CharField(
         max_length=10, choices=TALLAS_CAMISETA, null=True, blank=True
+    )
+
+    cv = models.FileField(
+        upload_to=ruta_cv,
+        null=True,
+        validators=[FileExtensionValidator(["pdf"]), validador_pdf],
     )
     compartir_cv = models.BooleanField(default=False)
     aceptado = models.BooleanField(default=False)
 
-    class Meta:
+
+class Mentor(Persona):
+
+    class Meta(Persona.Meta):
         verbose_name = "Mentor"
         verbose_name_plural = "Mentores"
 
@@ -100,19 +111,9 @@ class Participante(Persona):
     curso = models.CharField(max_length=128, null=True, blank=True)
     ciudad = models.CharField(max_length=128, null=True, blank=True)
     quiere_creditos = models.BooleanField(default=False)
-    talla_camiseta = models.CharField(
-        max_length=10, choices=TALLAS_CAMISETA, null=True, blank=True
-    )
     motivacion = models.TextField(null=True, blank=True)
-    cv = models.FileField(
-        upload_to=ruta_cv,
-        null=True,
-        validators=[FileExtensionValidator(["pdf"]), validador_pdf],
-    )
-    compartir_cv = models.BooleanField(default=False)
-    aceptado = models.BooleanField(default=False)
 
-    class Meta:
+    class Meta(Persona.Meta):
         verbose_name = "Participante"
         verbose_name_plural = "Participantes"
 

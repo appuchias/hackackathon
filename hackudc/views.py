@@ -47,9 +47,8 @@ def alta(request: HttpRequest):
     if form.is_valid():
         datos = form.cleaned_data
 
-        persona = Participante.objects.filter(correo=datos["correo"]).first()
-        if not persona:
-            persona = Mentor.objects.get(correo=datos["correo"])
+        persona = Persona.objects.filter(correo=datos["correo"]).first()
+
         if not persona:
             messages.error(request, "No se encontró el participante")
             return redirect("alta")
@@ -58,7 +57,7 @@ def alta(request: HttpRequest):
             messages.error(request, "El participante no ha sido aceptado")
             return redirect("alta")
 
-        if persona.uuid:
+        if persona.acreditacion:
             messages.error(request, "El participante ya está registrado")
             return redirect("alta")
 
@@ -66,16 +65,16 @@ def alta(request: HttpRequest):
         # Mostrar los datos y el formulario precompletado con el correo
         if not datos["acreditacion"]:
             messages.info(request, f"{persona.nombre} - {persona.talla_camiseta}")
-            return redirect("alta")
+            return render(request, "gestion/registro.html", {"form": form})
 
         # 3. Petición completa
         # Asignar la acreditación. Página de éxito con timeout y volver a la original
-        persona.uuid = datos["acreditacion"]
+        persona.acreditacion = datos["acreditacion"]
         persona.save()
 
         messages.success(
             request,
-            f"Asignada acreditación {persona.uuid} a {persona.correo}",
+            f"Asignada acreditación {persona.acreditacion} a {persona.correo}",
         )
         return redirect("alta")
 
@@ -97,7 +96,7 @@ def pases(request: HttpRequest):
 
     if form.is_valid():
         datos = form.cleaned_data
-        persona = Persona.objects.get(uuid=datos["acreditacion"])
+        persona = Persona.objects.get(acreditacion=datos["acreditacion"])
 
         if persona:
             pase = Pase(persona=persona, tipo_pase=datos["tipo_pase"])
@@ -120,15 +119,12 @@ def presencia(request: HttpRequest):
 
         if form.is_valid():
             datos = form.cleaned_data
-            participante = Participante.objects.filter(
-                uuid=datos["participante"]
-            ).first()
-            print(participante)
+            persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
 
-            if not participante:
+            if not persona:
                 mensaje = "No existe la acreditación"
 
-            presencias = Presencia.objects.filter(participante=participante)
+            presencias = Presencia.objects.filter(persona=persona)
             ultima = presencias.order_by("entrada").last()
 
             # Acciones
@@ -142,9 +138,7 @@ def presencia(request: HttpRequest):
                         return HttpResponse("No salió")
 
                     # Guardar entrada
-                    entrada = Presencia(
-                        participante=participante, entrada=datetime.now()
-                    )
+                    entrada = Presencia(persona=persona, entrada=datetime.now())
                     entrada.save()
                     return HttpResponse("OK")
 

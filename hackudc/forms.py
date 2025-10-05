@@ -93,4 +93,4 @@ class PresenciaForm(forms.Form):
     accion = forms.ChoiceField(
         choices=(("v", "Ver"), ("e", "Entrada"), ("s", "Salida"))
     )
-    participante = forms.CharField(label="Acreditación a asignar", max_length=6)
+    acreditacion = forms.CharField(label="Acreditación a asignar", max_length=6)
