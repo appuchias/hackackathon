@@ -59,8 +59,10 @@ class Command(BaseCommand):
                     writer.writerow((correo, nombre, atributos))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(e))
-            raise CommandError("Error encontrado mientras se escribía el CSV!")
+            self.stdout.write(
+                self.style.ERROR("Error encontrado mientras se escribía el CSV!")
+            )
+            raise e
 
         self.stdout.write(
             self.style.SUCCESS(
