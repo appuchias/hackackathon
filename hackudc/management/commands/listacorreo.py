@@ -6,29 +6,34 @@ from hackudc.models import Participante
 
 
 class Command(BaseCommand):
-    help = "Crea un archivo CSV con la información de los participantes para su importación en listmonk."
+    help = "Exporta la información de los participantes en CSV para su importación en listmonk."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "archivo", help="Archivo de salida", type="path", default="lista_correo.csv"
+            "-o",
+            "--output",
+            help="Archivo de salida",
+            default="lista_correo.csv",
         )
         parser.add_argument(
-            "--overwrite",
-            help="Sobreescribir el archivo de salida si existe.",
-            action="store_strue",
+            "--no-overwrite",
+            help="Evitar sobreescribir el archivo de salida.",
+            action="store_true",
             default=False,
         )
 
     def handle(self, *args, **options):
-        if os.path.exists(args.archivo) and not args.overwrite:
+        archivo = options.get("output")
+
+        if os.path.exists(archivo) and options.get("no_overwrite"):
             raise CommandError(
-                "El archivo de salida existe. Añade --overwrite para sobreescribirlo."
+                "El archivo de salida existe y se indicó --no-overwrite."
             )
 
         atributos_extra = ("talla_camiseta",)
 
         participantes = Participante.objects.filter()
-        participantes_info = participantes.values("nombre", "correo", *atributos_extra)
+        participantes_info = participantes.values("correo", "nombre", *atributos_extra)
 
         self.stdout.write(
             self.style.HTTP_INFO(
@@ -37,21 +42,17 @@ class Command(BaseCommand):
         )
 
         try:
-            with open(args.archivo, "w") as csvfile:
-                writer = csv.writer(
-                    csvfile,
-                    delimiter=";",
-                    quoting=csv.QUOTE_MINIMAL,
-                    fieldnames=("email", "name", "attributes"),
-                )
+            with open(archivo, "w") as csvfile:
+                writer = csv.writer(csvfile, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(("email", "name", "attributes"))
 
                 for participante in participantes_info:
-                    nombre = participante.pop("nombre")
                     correo = participante.pop("correo")
-                    writer.writerow(nombre, correo, participante)
+                    nombre = participante.pop("nombre")
+                    writer.writerow((correo, nombre, participante))
 
         except Exception as e:
-            e.printStackTrace()
+            self.stdout.write(self.style.ERROR(e))
             raise CommandError("Error encontrado mientras se escribía el CSV!")
 
         self.stdout.write(
