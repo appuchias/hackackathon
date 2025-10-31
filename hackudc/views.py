@@ -276,16 +276,25 @@ def presencia_editar(request: HttpRequest, id_presencia: str):
 def verificar_correo(request: HttpRequest, token: str):
     token_obj = Token.objects.filter(token=token, tipo="VERIFICACION").first()
     if not token_obj:
-        messages.error(request, "Token inválido")
-        return redirect("registro")
+        # messages.error(request, "Token inválido")
+        return render(
+            request,
+            "verificacion_incorrecta.html",
+            {"motivo": "Token inválido", "token": token},
+        )
 
     if not token_obj.valido():
-        messages.error(
-            request,
-            "El token de verificación ha expirado. Ponte en contacto con nosotros para verificar tu correo manualmente.",
-        )
+        # messages.error(
+        #     request,
+        #     "El token de verificación ha expirado. Ponte en contacto con nosotros para verificar tu correo manualmente.",
+        # )
+
         #!!! Permitimos que el usuario solicite un nuevo token aquí?
-        return redirect("registro")
+        return render(
+            request,
+            "verificacion_incorrecta.html",
+            {"motivo": "Token expirado", "token": token},
+        )
 
     ahora = timezone.now()
 
@@ -297,5 +306,5 @@ def verificar_correo(request: HttpRequest, token: str):
 
     token_obj.fecha_uso = ahora
 
-    messages.success(request, "Correo verificado correctamente")
-    return redirect("registro")
+    # messages.success(request, "Correo verificado correctamente")
+    return render(request, "verificacion_correcta.html", {"participante": participante})

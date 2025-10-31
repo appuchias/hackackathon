@@ -1,0 +1,15 @@
+{% extends 'marco.html' %}
+
+{% block title %}Verificación correo{% endblock title %}
+
+{% block content %}
+<div id="verificacion-correo">
+    <p>
+        Tu correo ha sido verificado!
+        <hr>
+        Comprueba que los detalles que especificaste sean correctos,
+        y mándanos un correo a <a href="mailto:hackudc@gpul.org">hackudc@gpul.org</a> si hay algún error!
+    </p>
+    {{ participante }}
+</div>
+{% endblock content %}
