@@ -3,22 +3,18 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
-from django.core.mail import EmailMessage
-from django.http import HttpRequest, HttpResponse
+from django.core.mail import EmailMultiAlternatives
+from django.http import HttpRequest
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from hackudc.forms import EditarPresenciaForm, ParticipanteForm, PaseForm, Registro
 from hackudc.models import Participante, Pase, Persona, Presencia, TipoPase, Token
 
 EMAIL_VERIFICACION_ASUNTO = "HackUDC 2026 - Confirma tu correo ✉️"
-EMAIL_VERIFICACION_CUERPO = """\
-Hola {nombre}. Tu token de inicio de sesión es: {token}.
-
-Puedes verificar tu correo haciendo clic en el siguiente enlace: https://{host}/verificar/{token}
-"""
+EMAIL_CONFIRMACION_ASUNTO = "HackUDC 2026 - Confirma tu plaza! <emoji>"
 
 
 @login_not_required
@@ -40,16 +36,20 @@ def registro(request: HttpRequest):
         )
         token.save()
         try:
-            email = EmailMessage(
+            params = {
+                "nombre": participante.nombre,
+                "token": token.token,
+                "host": request.get_host(),
+            }
+            email = EmailMultiAlternatives(
                 EMAIL_VERIFICACION_ASUNTO,
-                EMAIL_VERIFICACION_CUERPO.format(
-                    nombre=participante.nombre,
-                    token=token.token,
-                    host=request.get_host(),
-                ),
+                render_to_string("correo/....txt", params),
                 to=(participante.correo,),
                 reply_to=("info@gpul.org",),
                 headers={"Message-ID": f"hackudc-{token.fecha_creacion.timestamp()}"},
+            )
+            email.attach_alternative(
+                render_to_string("correo/....html", params), "text/html"
             )
             email.send(fail_silently=False)
         except ConnectionRefusedError:
