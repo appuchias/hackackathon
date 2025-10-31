@@ -7,9 +7,20 @@
     <p>
         Tu correo ha sido verificado!
         <hr>
-        Comprueba que los detalles que especificaste sean correctos,
-        y mándanos un correo a <a href="mailto:hackudc@gpul.org">hackudc@gpul.org</a> si hay algún error!
+        Comprueba que los detalles que especificaste sean correctos:
     </p>
-    {{ participante }}
+    <ul>
+        <li>Nombre: {{ participante.nombre }}</li>
+        <li>DNI: {{ participante.dni }}</li>
+        <li>Teléfono: {{ participante.telefono }}</li>
+        <li>Año de nacimiento: {{ participante.ano_nacimiento }}</li>
+        <li>Curso actual: {{ participante.curso }}</li>
+        <li>Nombre del estudio: {{ participante.nombre_estudio }}</li>
+        <li>Centro de estudio: {{ participante.centro_estudio }}</li>
+        <li>Quieres créditos: {{ participante.quiere_creditos|yesno }} (solo UDC)</li>
+        <li>Talla de camiseta pedida: {{ participante.talla_camiseta }}</li>
+        <li>Quieres compartir tu cv: {{ participante.compartir_cv|yesno }}</li>
+    </ul>
+    <p>Si hay algún error mándanos un correo a <a href="mailto:hackudc@gpul.org?subject=[REGISTRO] - Error en los detalles del registro">hackudc@gpul.org</a>.</p>
 </div>
 {% endblock content %}
