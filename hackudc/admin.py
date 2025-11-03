@@ -148,6 +148,10 @@ class TokenAdmin(admin.ModelAdmin):
         TokenValidoListFilter,
     ]
 
+    search_fields = [
+        "persona",
+    ]
+
 
 # Register your models here.
 admin.site.register(Patrocinador)
