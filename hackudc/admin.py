@@ -88,6 +88,24 @@ class EstadoParticipanteListFilter(admin.SimpleListFilter):
                 )
 
 
+class TokenValidoListFilter(admin.SimpleListFilter):
+    title = "Validez"
+    parameter_name = "validez"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("valido", "Válido"),
+            ("expirado", "Expirado"),
+        ]
+
+    def queryset(self, request, queryset):
+        match self.value():
+            case "valido":
+                return queryset.filter(fecha_expiracion__gte=timezone.now())
+            case "expirado":
+                return queryset.filter(fecha_expiracion__lt=timezone.now())
+
+
 class ParticipanteAdmin(admin.ModelAdmin):
     list_display = [
         "correo",
@@ -105,6 +123,32 @@ class ParticipanteAdmin(admin.ModelAdmin):
     actions = [aceptar_participante]
 
 
+class TokenAdmin(admin.ModelAdmin):
+    fields = [
+        "token",
+        "tipo",
+        "persona",
+        "fecha_creacion",
+        "fecha_expiracion",
+        "fecha_uso",
+    ]
+    readonly_fields = [
+        "token",
+        "fecha_creacion",
+    ]
+
+    list_display = [
+        "persona",
+        "tipo",
+        "fecha_creacion",
+        "valido",
+    ]
+    list_filter = [
+        "tipo",
+        TokenValidoListFilter,
+    ]
+
+
 # Register your models here.
 admin.site.register(Patrocinador)
 admin.site.register(Mentor)
@@ -113,4 +157,4 @@ admin.site.register(RestriccionAlimentaria)
 admin.site.register(Presencia)
 admin.site.register(TipoPase)
 admin.site.register(Pase)
-admin.site.register(Token)
+admin.site.register(Token, TokenAdmin)
