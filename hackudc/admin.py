@@ -137,6 +137,8 @@ class TokenAdmin(admin.ModelAdmin):
         "fecha_creacion",
     ]
 
+    radio_fields = {"tipo": admin.HORIZONTAL}
+
     list_display = [
         "persona",
         "tipo",
