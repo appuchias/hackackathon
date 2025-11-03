@@ -281,13 +281,15 @@ def verificar_correo(request: HttpRequest, token: str):
         )
         return redirect("registro")
 
+    ahora = timezone.now()
+
     participante: Participante = Participante.objects.get(
         correo=token_obj.persona.correo
     )
-    participante.fecha_verificacion_correo = timezone.now()
+    participante.fecha_verificacion_correo = ahora
     participante.save()
 
-    # token_obj.delete()
+    token_obj.fecha_uso = ahora
 
     messages.success(request, "Correo verificado correctamente")
     return redirect("registro")
