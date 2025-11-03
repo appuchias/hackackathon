@@ -111,6 +111,9 @@ class Persona(PersonaAbstracta):
     def confirmado(self):
         return self.fecha_confirmacion_plaza is not None
 
+    def __str__(self):
+        return f"{self.nombre} ({self.correo})"
+
 
 class Mentor(Persona):
 
