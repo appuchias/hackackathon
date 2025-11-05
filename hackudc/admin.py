@@ -15,10 +15,25 @@ from hackudc.models import (
 
 
 def aceptar_participante(modeladmin, request, queryset):
-    ya_aceptados = queryset.filter(fecha_aceptacion__isnull=False).count()
-    actualizados = queryset.filter(fecha_aceptacion__isnull=True).update(
+    verificados = queryset.filter(fecha_verificacion_correo__isnull=False)
+    no_verificados = queryset.filter(fecha_verificacion_correo__isnull=True)
+
+    ya_aceptados = verificados.filter(fecha_aceptacion__isnull=False).count()
+    actualizados = verificados.filter(fecha_aceptacion__isnull=True).update(
         fecha_aceptacion=timezone.now()
     )
+
+    if no_verificados.exists():
+        modeladmin.message_user(
+            request,
+            ngettext(
+                "%d participante no tiene el correo verificado y no se ha podido aceptar.",
+                "%d participantes no tienen el correo verificado y no se han podido aceptar.",
+                no_verificados.count(),
+            )
+            % no_verificados.count(),
+            messages.ERROR,
+        )
 
     if ya_aceptados:
         modeladmin.message_user(
