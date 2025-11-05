@@ -1,0 +1,3 @@
+Hola {{ nombre }}. Tu token de inicio de sesión es: {{ token }}.
+
+Puedes verificar tu correo haciendo clic en el siguiente enlace: https://{{ host }}/verificar/{{ token }}
