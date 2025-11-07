@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("hackudc", "0004_alter_presencia_entrada"),
+        ("gestion", "0004_alter_presencia_entrada"),
     ]
 
     operations = [

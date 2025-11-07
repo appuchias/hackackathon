@@ -10,8 +10,8 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from hackudc.forms import EditarPresenciaForm, ParticipanteForm, PaseForm, Registro
-from hackudc.models import Participante, Pase, Persona, Presencia, TipoPase, Token
+from gestion.forms import EditarPresenciaForm, ParticipanteForm, PaseForm, Registro
+from gestion.models import Participante, Pase, Persona, Presencia, TipoPase, Token
 
 EMAIL_VERIFICACION_ASUNTO = "HackUDC 2026 - Confirma tu correo ✉️"
 EMAIL_CONFIRMACION_ASUNTO = "HackUDC 2026 - Confirma tu plaza! <emoji>"

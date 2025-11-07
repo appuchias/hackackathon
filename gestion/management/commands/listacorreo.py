@@ -2,7 +2,7 @@ import csv, os
 
 from django.core.management.base import BaseCommand, CommandError
 
-from hackudc.models import Participante
+from gestion.models import Participante
 
 
 # email,name,attributes

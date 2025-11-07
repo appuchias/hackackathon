@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("hackudc", "0002_remove_persona_aceptado_persona_fecha_aceptacion_and_more"),
+        ("gestion", "0002_remove_persona_aceptado_persona_fecha_aceptacion_and_more"),
     ]
 
     operations = [
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="tokens",
-                        to="hackudc.persona",
+                        to="gestion.persona",
                     ),
                 ),
             ],

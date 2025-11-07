@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("hackudc", "0006_sqlite_pragmas"),
+        ("gestion", "0006_sqlite_pragmas"),
     ]
 
     operations = [

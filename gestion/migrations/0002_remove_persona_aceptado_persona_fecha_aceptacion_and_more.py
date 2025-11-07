@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("hackudc", "0001_initial"),
+        ("gestion", "0001_initial"),
     ]
 
     operations = [

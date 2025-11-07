@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils import timezone
 from django.utils.translation import ngettext
 
-from hackudc.models import (
+from gestion.models import (
     Participante,
     Mentor,
     Patrocinador,

@@ -1,28 +1,28 @@
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 1
   fields:
     nombre: Intolerancia al gluten
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 2
   fields:
     nombre: Intolerancia a la lactosa
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 3
   fields:
     nombre: Vegetarianismo
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 4
   fields:
     nombre: Veganismo
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 5
   fields:
     nombre: Diabetes
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 6
   fields:
     nombre: Alergia (Especificar en notas)
-- model: hackudc.restriccionalimentaria
+- model: gestion.restriccionalimentaria
   pk: 7
   fields:
     nombre: Otro (Especificar en notas)

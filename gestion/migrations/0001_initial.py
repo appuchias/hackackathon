@@ -2,7 +2,7 @@
 
 import django.core.validators
 import django.db.models.deletion
-import hackudc.models
+import gestion.models
 from django.db import migrations, models
 
 
@@ -66,10 +66,10 @@ class Migration(migrations.Migration):
                     "cv",
                     models.FileField(
                         null=True,
-                        upload_to=hackudc.models.ruta_cv,
+                        upload_to=gestion.models.ruta_cv,
                         validators=[
                             django.core.validators.FileExtensionValidator(["pdf"]),
-                            hackudc.models.validador_pdf,
+                            gestion.models.validador_pdf,
                         ],
                     ),
                 ),
@@ -116,7 +116,7 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="hackudc.persona",
+                        to="gestion.persona",
                     ),
                 ),
             ],
@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "Mentores",
                 "abstract": False,
             },
-            bases=("hackudc.persona",),
+            bases=("gestion.persona",),
         ),
         migrations.CreateModel(
             name="Participante",
@@ -138,7 +138,7 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="hackudc.persona",
+                        to="gestion.persona",
                     ),
                 ),
                 ("telefono", models.CharField(blank=True, max_length=16, null=True)),
@@ -189,7 +189,7 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "Participantes",
                 "abstract": False,
             },
-            bases=("hackudc.persona",),
+            bases=("gestion.persona",),
         ),
         migrations.AddField(
             model_name="persona",
@@ -197,7 +197,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 related_name="%(class)ss",
-                to="hackudc.restriccionalimentaria",
+                to="gestion.restriccionalimentaria",
             ),
         ),
         migrations.CreateModel(
@@ -223,7 +223,7 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         blank=True,
                         related_name="%(class)ss",
-                        to="hackudc.restriccionalimentaria",
+                        to="gestion.restriccionalimentaria",
                     ),
                 ),
             ],
@@ -244,7 +244,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="tiempo_acceso",
-                        to="hackudc.persona",
+                        to="gestion.persona",
                     ),
                 ),
             ],
@@ -264,7 +264,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="pases",
-                        to="hackudc.persona",
+                        to="gestion.persona",
                     ),
                 ),
                 (
@@ -272,7 +272,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="pases",
-                        to="hackudc.tipopase",
+                        to="gestion.tipopase",
                     ),
                 ),
             ],

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from hackudc.models import Participante, Presencia, RestriccionAlimentaria, TipoPase
+from gestion.models import Participante, Presencia, RestriccionAlimentaria, TipoPase
 
 
 class ParticipanteForm(forms.ModelForm):

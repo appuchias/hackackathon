@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from hackudc import views
+from gestion import views
 
 urlpatterns = [
     path("", views.registro, name="registro"),

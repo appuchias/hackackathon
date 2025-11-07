@@ -3,7 +3,7 @@ from random import choice, randint
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 
-from hackudc.models import Participante
+from gestion.models import Participante
 
 
 class Command(BaseCommand):

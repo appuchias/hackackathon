@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("hackudc", "0007_alter_participante_ano_nacimiento_and_more"),
+        ("gestion", "0007_alter_participante_ano_nacimiento_and_more"),
     ]
 
     operations = [
