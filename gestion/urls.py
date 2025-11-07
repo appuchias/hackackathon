@@ -1,3 +1,5 @@
+# Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 

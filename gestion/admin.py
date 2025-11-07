@@ -1,3 +1,5 @@
+# Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+
 from django.contrib import admin, messages
 from django.utils import timezone
 from django.utils.translation import ngettext

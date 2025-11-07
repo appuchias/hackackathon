@@ -1,3 +1,5 @@
+# Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+
 from random import choice, randint
 
 from django.core.management.base import BaseCommand, CommandError

@@ -1,3 +1,5 @@
+# Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+
 import os
 from pathlib import Path
 
