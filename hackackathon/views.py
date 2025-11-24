@@ -2,12 +2,14 @@
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_not_required
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 
+@login_not_required
 def idioma(request: HttpRequest, codigo: str):
     idiomas_validos = [codigo for codigo, nombre in settings.LANGUAGES]
 

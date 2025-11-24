@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
     <!-- Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com> -->
-    {% load static %}
+    {% load static i18n %}
 
     <head>
         <meta charset="UTF-8">
@@ -32,6 +32,20 @@
             <a href="#" onclick="document.getElementById('logout-form').submit()" class="boton boton-rojo ml-auto mr-0">Cerrar sesión</a>
         </nav>
         {% endif %}
+
+        <div class="nav-idioma">
+            <div id="selector-idioma">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+                <a href="{% url 'idioma' language.code %}" class="link-grey-hover-yellow"
+                   {% if language.code == LANGUAGE_CODE %}aria-selected="true" {% endif %}>
+                    {{ language.code|upper }}
+                </a>
+            {% endfor %}
+        </div>
+        </div>
 
         <div class="messages">
             {% for message in messages %}
