@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hackackathon VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-24 19:05+0100\n"
+"POT-Creation-Date: 2025-11-28 16:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,14 +42,51 @@ msgid_plural "%d participantes aceptados."
 msgstr[0] "%d participante aceptado."
 msgstr[1] "%d participantes aceptados."
 
-#: hackackathon/settings.py:254
+#: hackackathon/settings.py:253
 msgid "Castellano"
 msgstr "Castelán"
 
-#: hackackathon/settings.py:255
+#: hackackathon/settings.py:254
 msgid "Gallego"
 msgstr "Galego"
 
-#: hackackathon/settings.py:256
+#: hackackathon/settings.py:255
 msgid "Inglés"
 msgstr "Inglés"
+
+#: hackackathon/views.py:21
+msgid "Código de idioma no válido. Los posibles son"
+msgstr "Código de idioma non válido. Os posibles son"
+
+#: templates/registro.html:10
+msgid "Regístrate en"
+msgstr "Rexístrate en"
+
+#. Translators: Etiqueta para la casilla de términos y condiciones
+#: templates/registro.html:22
+msgid "Acepto los"
+msgstr "Acepto os"
+
+#: templates/registro.html:23
+msgid "Términos y Condiciones"
+msgstr "Termos e Condicións"
+
+#: templates/registro.html:24
+msgid "y el"
+msgstr "e o"
+
+#: templates/registro.html:25
+msgid "Código de conducta"
+msgstr "Código de conducta"
+
+#: templates/registro.html:31
+msgid "Apuntarme a HackUDC"
+msgstr "Apuntarme a HackUDC"
+
+#: templates/registro.html:36
+msgid "Al enviar aceptas la"
+msgstr "Ao enviar aceptas a"
+
+#: templates/registro.html:36
+msgid "política de privacidad"
+msgstr "política de privacidade"

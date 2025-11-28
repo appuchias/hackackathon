@@ -23,8 +23,8 @@ from gestion.forms import (
     ParticipanteForm,
     PaseForm,
     Registro,
-    RevisarParticipanteForm,
     RevisarMentorForm,
+    RevisarParticipanteForm,
 )
 from gestion.models import (
     Mentor,
@@ -55,7 +55,7 @@ def registro(request: HttpRequest):
         logger.debug("Intento de acceso con el registro cerrado")
         return render(request, "registro_cerrado.html")
 
-    titulo = "Regístrate en"
+    titulo = _("Regístrate en")
     url = reverse("registro")
 
     if request.method == "GET":
@@ -130,7 +130,7 @@ def registro_mentores(request: HttpRequest):
         logger.debug("Intento de acceso con el registro cerrado")
         return render(request, "registro_cerrado.html")
 
-    titulo = "Registro de mentores"
+    titulo = _("Registro de mentores")
     url = reverse("registro-mentores")
 
     if request.method == "GET":
