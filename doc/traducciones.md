@@ -23,7 +23,7 @@ se trate:
 
 - En archivos habituales,\
   `from django.utils.translation import gettext as _`.\
-- En archivos ejecutados en el arranque de Django (`admin.py`, `settings.py`, etc.)
+- En archivos ejecutados en el arranque de Django (`admin.py`, `settings.py`, `models.py`, etc.)
   https://docs.djangoproject.com/en/5.2/topics/i18n/translation/#lazy-translation \
   `from django.utils.translation import gettext_lazy as _`
 - En casos en los que el texto a traducir requiera contexto (aparece en varias situaciones con traducciones distintas),
@@ -42,6 +42,8 @@ Para aportar contexto adicional a los traductores, se debe añadir un comentario
 estructura siguiente:
 `# Translators: <el comentario>`
 
+Un ejemplo del uso está disponible en el archivo [settings.py](hackackathon/settings.py) en la definición de la variable `LANGUAGES`.
+
 #### En plantillas
 
 Se introduce el texto a traducir entre las comillas de `{% translate '' %}`.
@@ -49,6 +51,8 @@ Se introduce el texto a traducir entre las comillas de `{% translate '' %}`.
 Para aportar contexto adicional a los traductores, se debe añadir un comentario en la línea previa a la llamada con la
 estructura siguiente:
 `{# Translators: <el comentario> #}`
+
+Un ejemplo del uso está disponible en el archivo [registro.html](templates/registro.html), en todos los textos presentes.
 
 ### Creación del archivo de traducción
 
