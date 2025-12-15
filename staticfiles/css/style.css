@@ -84,6 +84,44 @@ button.boton {
 
 .transparente { background-color: transparent;}
 
+/* Footer */
+.nav-idioma {
+    display: flex;
+    justify-content: end;
+
+    margin: 0 auto;
+    margin-top: 2em;
+    width: var(--max-width);
+    max-width: var(--max-width);
+}
+
+#selector-idioma {
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+
+    gap: 0.5rem;
+    padding: 0.5em 2em;
+
+    font-size: 0.8em;
+    color: var(--texto);
+}
+
+#selector-idioma a {
+    font-weight: bolder;
+    color: var(--amarillo);
+    text-decoration: none;
+    padding: 0.25rem 1rem;
+    border: 2px solid var(--amarillo);
+    border-radius: .25rem;
+}
+
+#selector-idioma a[aria-selected=true], #selector-idioma a.link-grey-hover-yellow:hover {
+    color: #000;
+    background-color: var(--amarillo);
+    text-decoration: underline;
+}
+
 
 /* GENERAL */
 .lucide {

@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -236,13 +237,25 @@ LOGGING = {
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "es-es"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "Europe/Madrid"
 
 USE_I18N = True
 
 USE_TZ = True
+
+# Translations
+# https://docs.djangoproject.com/en/5.1/topics/i18n/translation/
+# ./manage.py makemessages --all
+# ./manage.py compilemessages
+LANGUAGES = [
+    ("es", _("Castellano")),
+    ("gl", _("Gallego")),
+    ("en", _("Inglés")),
+]
+LANGUAGE_COOKIE_NAME = "lang"
+LOCALE_PATHS = (BASE_DIR / "locale",)
 
 
 # Static files (CSS, JavaScript, Images)

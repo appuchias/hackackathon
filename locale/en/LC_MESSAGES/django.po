@@ -1,0 +1,93 @@
+# Hackackathon English translations
+# Copyright (C) 2025-now p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+# This file is distributed under the same license as the Hackackathon package.
+# p.fernandezf <p@fernandezf.es>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Hackackathon VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-28 16:16+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gestion/admin.py:47
+#, python-format
+msgid ""
+"%d participante no tiene el correo verificado y no se ha podido aceptar."
+msgid_plural ""
+"%d participantes no tienen el correo verificado y no se han podido aceptar."
+msgstr[0] ""
+"%d participant's email wasn't verified and they couldn't be accepted."
+msgstr[1] ""
+"%d participants' emails weren't verified and they couldn't be accepted"
+
+#: gestion/admin.py:59
+#, python-format
+msgid "%d participante ya estaba aceptado."
+msgid_plural "%d participantes ya estaban aceptados."
+msgstr[0] "%d participant was already accepted."
+msgstr[1] "%d participants were already accepted."
+
+#: gestion/admin.py:70
+#, python-format
+msgid "%d participante aceptado."
+msgid_plural "%d participantes aceptados."
+msgstr[0] "%d participant accepted."
+msgstr[1] "%d participants accepted."
+
+#: hackackathon/settings.py:253
+msgid "Castellano"
+msgstr "Spanish"
+
+#: hackackathon/settings.py:254
+msgid "Gallego"
+msgstr "Galician"
+
+#: hackackathon/settings.py:255
+msgid "Inglés"
+msgstr "English"
+
+#: hackackathon/views.py:21
+msgid "Código de idioma no válido. Los posibles son"
+msgstr "Invalid language code. Valid ones are"
+
+#: templates/registro.html:10
+msgid "Regístrate en"
+msgstr "Register at"
+
+#. Translators: Etiqueta para la casilla de términos y condiciones
+#: templates/registro.html:22
+msgid "Acepto los"
+msgstr "I accept the"
+
+#: templates/registro.html:23
+msgid "Términos y Condiciones"
+msgstr "Terms and Conditions"
+
+#: templates/registro.html:24
+msgid "y el"
+msgstr "and the"
+
+#: templates/registro.html:25
+msgid "Código de conducta"
+msgstr "Code of conduct"
+
+#: templates/registro.html:31
+msgid "Apuntarme a HackUDC"
+msgstr "Sign up for HackUDC"
+
+#: templates/registro.html:36
+msgid "Al enviar aceptas la"
+msgstr "By signing up you accept the"
+
+#: templates/registro.html:36
+msgid "política de privacidad"
+msgstr "privacy policy"
