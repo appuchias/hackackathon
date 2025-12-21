@@ -4,10 +4,18 @@
 {% load static %}
 
 {% block head %}
+<link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+
 <link href="{% static 'css/gestion.css' %}" media="all" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
+<script>
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+    }
+</script>
+
 <ul id="gestion-index">
     {% if user.is_staff %}<li><a href="/admin">Admin</a></li>{% endif %}
     <li><a href="{% url 'alta' %}">Registro</a></li>
