@@ -170,6 +170,7 @@ class PaseForm(forms.Form):
         queryset=TipoPase.objects.all().order_by("inicio_validez")
     )
     acreditacion = forms.CharField(label="Acreditación", max_length=6)
+    confirmar = forms.BooleanField(label="confirmar", required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

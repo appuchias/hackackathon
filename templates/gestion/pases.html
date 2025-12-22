@@ -1,21 +1,53 @@
 {% extends "marco.html" %}
 
 {% block title %}Pases{% endblock %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'js/htmx.min.js' %}"></script>
+<script src="{% static 'js/qr-scanner.umd.min.js' %}"></script>
+<link href="{% static 'css/gestion.css' %}" media="all" rel="stylesheet">
+{% endblock head %}
 
 {% block content %}
+<style>
+    div#content {
+    max-width: 100%;
+    width: 100%;
+}
+</style>
+
 <div id="gestion-pases">
-    <h1>Pases</h1>
+    <div id="pases-camara">
+        <h1>Pase: <small style="color: var(--amarillo-hackudc)"><i>{{ pase.nombre }}</i></small></h1>
+        <video id="qr-video"></video>
+    </div>
+    <div id="pases-resultado">
+        <h2><i>Escanea un pase</i></h2>
+        <form hx-post="{% url 'pases' %}" hx-target="#pases-resultado" method="post" id="form-pases">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 
-    <h2>Actual</h2>
-    {% with pase=form.fields.tipo_pase.initial %}{% if pase %}
-    {{ pase.id_tipo_pase }} - {{ pase.nombre }}, desde {{ pase.inicio_validez }}
-    {% endif %}{% endwith %}
+    <script>
+        function scan(result) {
+            document.getElementById("form-pases").elements[2].value = result;
+        }
+        
+        const qrScanner = new QrScanner(
+            document.getElementById("qr-video"),
+            result => scan(result.data),
+            {
+                maxScansPerSecond: 15
+            }
+        );
 
-    <h2>Añadir</h2>
-    <form action="{% url 'pases' %}" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
+        QrScanner.listCameras();
+        qrScanner.start();
+        // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
+
+    </script>
 </div>
 {% endblock content %}

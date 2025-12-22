@@ -77,10 +77,56 @@ ul#gestion-index {
 #gestion-index a {
     color: #f0f0f0;
     text-decoration: none;
+    font-size: 125%;
 
     flex-grow: 1;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+#qr-video {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+
+    border-radius: 1em;
+}
+
+#gestion-registro h1 { margin-top:0; }
+
+/* pases de comida */
+#gestion-pases {
+    display: flex;
+    flex-direction: column;
+
+    flex-grow: 1;
+}
+
+#gestion-pases h1 { margin-top: 0; }
+
+#pases-resultado {
+    background-color: var(--fondo);
+    border-top: 2px solid var(--borde);
+
+    flex-grow: 1;
+}
+
+#pases-camara {
+    width: min(calc(100% - 2rem), var(--max-width));
+    margin: 0 auto;
+}
+
+#pases-resultado {
+    padding: 1em;
+    margin-top: 1em;
+
+    border-radius: 1em 1em 0 0;
+}
+
+#pases-resultado h2 {
+    margin-top: 0;
+    text-align: center;
+    color: #777;
 }

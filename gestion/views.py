@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
-from django.http import FileResponse, HttpRequest
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import Http404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -492,7 +492,19 @@ def pases(request: HttpRequest):
         return render(request, "gestion/pases.html", {"form": PaseForm()})
 
     if request.method == "GET":
-        return render(request, "gestion/pases.html", {"form": PaseForm()})
+        return render(
+            request,
+            "gestion/pases.html",
+            {
+                "form": PaseForm(),
+                "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                .order_by("inicio_validez")
+                .first(),
+            },
+        )
+
+    # if request.method == "POST":
+    #     return HttpResponse("Hiciste un post aquí")
 
     form = PaseForm(request.POST)
 
@@ -501,16 +513,23 @@ def pases(request: HttpRequest):
         persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
 
         if persona:
+            pases = Pase.objects.filter(
+                persona=persona, tipo_pase=datos["tipo_pase"]
+            ).count()
+
             pase = Pase(persona=persona, tipo_pase=datos["tipo_pase"])
             pase.save()
-            messages.success(request, f"Pase creado")
-            return redirect("pases")
+            # messages.success(request, f"Pase creado")
+            # return redirect("pases")
+            return HttpResponse(f"Pase creado. Había {pases} pases")
 
-        messages.error(request, "No existe la acreditación")
-        return render(request, "gestion/pases.html", {"form": PaseForm()})
+        # messages.error(request, "No existe la acreditación")
+        # return render(request, "gestion/pases.html", {"form": PaseForm()})
+        return HttpResponse("No existe la acreditación")
 
-    messages.error(request, "Datos incorrectos")
-    return render(request, "gestion/pases.html", {"form": form})
+    # messages.error(request, "Datos incorrectos")
+    # return render(request, "gestion/pases.html", {"form": form})
+    return HttpResponse("Datos incorrectos")
 
 
 @require_http_methods(["GET"])
