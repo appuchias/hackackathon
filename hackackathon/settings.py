@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "gestion",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -232,6 +234,14 @@ LOGGING = {
         },
     },
 }
+
+
+# REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+}
+
 
 
 # Internationalization

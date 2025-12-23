@@ -8,6 +8,7 @@ django = "~=5.2" # 5.2.* (LTS)
 python-dotenv = "*"
 faker = "*"
 pyyaml = "*"
+djangorestframework = "*"
 
 [dev-packages]
 black = "*"
