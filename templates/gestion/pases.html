@@ -23,17 +23,27 @@
         <video id="qr-video"></video>
     </div>
     <div id="pases-resultado">
-        <h2><i>Escanea un pase</i></h2>
+        <!-- <h2><i>Escanea un pase</i></h2>
         <form hx-post="{% url 'pases' %}" hx-target="#pases-resultado" method="post" id="form-pases">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Submit">
-        </form>
+        </form> -->
+        {% include "gestion/pases.htmx.html" %}
     </div>
 
     <script>
+        var parado = false;
+
         function scan(result) {
-            document.getElementById("form-pases").elements[2].value = result;
+            // document.getElementById("form-pases").elements[2].value = result;
+
+            if (parado != true) {
+                document.getElementById("form-pases").elements[2].value = result;
+                document.getElementById("form-submit").click();
+                // qrScanner.stop();
+                parado = true;
+            }
         }
         
         const qrScanner = new QrScanner(

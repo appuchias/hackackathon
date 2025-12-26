@@ -17,12 +17,12 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from gestion.forms import (
+    ColaboradorForm,
     EditarPresenciaForm,
     MentorForm,
     NormalizacionForm,
     ParticipanteForm,
     PaseForm,
-    ColaboradorForm,
     Registro,
     RevisarMentorForm,
     RevisarParticipanteForm,
@@ -39,10 +39,10 @@ from gestion.models import (
 )
 from gestion.utils import (
     enviar_correo_aceptacion_plaza,
+    enviar_correo_colaborador,
     enviar_correo_rechazo_plaza,
     enviar_correo_verificacion,
     enviar_correo_verificacion_correcta,
-    enviar_correo_colaborador,
 )
 
 logger = logging.getLogger(__name__)
@@ -443,25 +443,29 @@ def alta(request: HttpRequest):
     if form.is_valid():
         datos = form.cleaned_data
 
-        persona = Persona.objects.filter(correo=datos["correo"]).first()
+        persona = Persona.objects.filter(correo=datos["persona"]).first()
 
         if not persona:
-            messages.error(request, "No se encontró el participante")
-            return redirect("alta")
+            # messages.error(request, "No se encontró el participante")
+            # return redirect("alta")
+            return HttpResponse("No se encontró el participante")
 
         if persona.fecha_aceptacion is None:
-            messages.error(request, "El participante no ha sido aceptado")
-            return redirect("alta")
+            # messages.error(request, "El participante no ha sido aceptado")
+            # return redirect("alta")
+            return HttpResponse("Participante no aceptado")
 
         if persona.acreditacion:
-            messages.error(request, "El participante ya está registrado")
-            return redirect("alta")
+            # messages.error(request, "El participante ya está registrado")
+            # return redirect("alta")
+            return HttpResponse("Participante ya registrado")
 
         # 2. Petición solo con el correo
         # Mostrar los datos y el formulario precompletado con el correo
         if not datos["acreditacion"]:
-            messages.info(request, f"{persona.nombre} - {persona.talla_camiseta}")
-            return render(request, "gestion/registro.html", {"form": form})
+            # messages.info(request, f"{persona.nombre} - {persona.talla_camiseta}")
+            # return render(request, "gestion/registro.html", {"form": form})
+            return HttpResponse(f"{persona.nombre} - {persona.talla_camiseta}")
 
         # 3. Petición completa
         # Asignar la acreditación. Página de éxito con timeout y volver a la original
@@ -471,11 +475,16 @@ def alta(request: HttpRequest):
         # Crear la Presencia inicial del participante
         Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
 
+        """
         messages.success(
             request,
             f"Asignada acreditación {persona.acreditacion} a {persona.correo} y primer acceso registrado",
         )
         return redirect("alta")
+        """
+        return HttpResponse(
+            f"Asignada acreditación {persona.acreditacion} a {persona.correo}",
+        )
 
     messages.error(request, "Datos incorrectos")
     return render(request, "gestion/registro.html", {"form": form})
@@ -494,17 +503,19 @@ def pases(request: HttpRequest):
     if request.method == "GET":
         return render(
             request,
-            "gestion/pases.html",
+            (
+                "gestion/pases.htmx.html"
+                if request.GET.get("htmx") == "true"
+                else "gestion/pases.html"
+            ),
             {
                 "form": PaseForm(),
                 "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
                 .order_by("inicio_validez")
                 .first(),
+                "limpia": True,
             },
         )
-
-    # if request.method == "POST":
-    #     return HttpResponse("Hiciste un post aquí")
 
     form = PaseForm(request.POST)
 
@@ -512,23 +523,45 @@ def pases(request: HttpRequest):
         datos = form.cleaned_data
         persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
 
-        if persona:
-            pases = Pase.objects.filter(
-                persona=persona, tipo_pase=datos["tipo_pase"]
-            ).count()
+        if not persona:
+            return render(
+                request,
+                "gestion/pases.htmx.html",
+                {
+                    "form": PaseForm(),
+                    "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                    .order_by("inicio_validez")
+                    .first(),
+                    "error": True,
+                },
+            )
 
+        pases = Pase.objects.filter(
+            persona=persona, tipo_pase=datos["tipo_pase"]
+        ).count()
+
+        if datos["confirmar"]:
             pase = Pase(persona=persona, tipo_pase=datos["tipo_pase"])
             pase.save()
-            # messages.success(request, f"Pase creado")
-            # return redirect("pases")
-            return HttpResponse(f"Pase creado. Había {pases} pases")
+            return render(
+                request,
+                "gestion/pases.htmx.html",
+                {
+                    "form": PaseForm(),
+                    "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                    .order_by("inicio_validez")
+                    .first(),
+                    "limpia": True,
+                },
+            )
+        else:
+            data = form.data.copy()
+            data["confirmar"] = True
+            form.data = data
+            return render(
+                request, "gestion/pases.htmx.html", {"pases": pases, "form": form}
+            )
 
-        # messages.error(request, "No existe la acreditación")
-        # return render(request, "gestion/pases.html", {"form": PaseForm()})
-        return HttpResponse("No existe la acreditación")
-
-    # messages.error(request, "Datos incorrectos")
-    # return render(request, "gestion/pases.html", {"form": form})
     return HttpResponse("Datos incorrectos")
 
 
