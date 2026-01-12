@@ -15,6 +15,7 @@ black = "*"
 mypy = "*"
 django-stubs = "*"
 aiosmtpd = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.13"

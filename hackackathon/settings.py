@@ -30,6 +30,11 @@ ALLOWED_HOSTS = [HOST_REGISTRO]
 if DEBUG:
     ALLOWED_HOSTS = ["*"]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+    os.getenv("DJANGO_DEBUG_TOOLBAR_INTERNAL_IP"),
+]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://" + HOST_REGISTRO,
 ]
@@ -45,11 +50,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "debug_toolbar",
     "gestion",
     "api",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
