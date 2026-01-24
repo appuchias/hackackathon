@@ -6,7 +6,6 @@ from rest_framework import routers
 from api import views
 
 router = routers.DefaultRouter()
-router.register(r"persona", views.PersonaViewSet, basename="persona")
 router.register(r"tipo_pase", views.TipoPaseViewSet, basename="tipo_pase")
 router.register(r"pase", views.PaseViewSet, basename="pase")
 router.register(r"presencia", views.PresenciaViewSet, basename="presencia")
@@ -19,5 +18,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+    path("persona", views.PersonaList.as_view()),
+    path("persona/<correo>/", views.PersonaRetrieveUpdate.as_view()),
     # path("presencia/<acreditacion>/<accion>", views.PresenciaAccion.as_view()),
 ]

@@ -1,11 +1,8 @@
 # Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
-from django.contrib.auth.decorators import login_not_required
-from django.core.exceptions import BadRequest
-from django.utils import timezone
-from rest_framework.exceptions import MethodNotAllowed, ParseError, ValidationError
+
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.exceptions import MethodNotAllowed, ValidationError
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet, ModelViewSet
 
 from api.serializers import (
@@ -18,79 +15,51 @@ from api.serializers import (
 from gestion.models import Pase, Persona, Presencia, TipoPase
 
 
-class PersonaViewSet(ListModelMixin, GenericViewSet):
+class PersonaList(ListAPIView):
     """
-    Ruta de la API que permite ver y modificar Personas.
+    Ruta para obtener Personas por correo o acreditación.
     """
 
     serializer_class = VerPersonaSerializer
 
     def get_queryset(self):
-        queryset = Persona.objects.all().order_by("fecha_registro")
+        correo = self.request.query_params.get("correo")
+        acreditacion = self.request.query_params.get("acreditacion")
 
-        # No mostrar todos los participantes. Solo filtrados
-        if self.action == "list":
-            correo = self.request.query_params.get("correo")
-            acreditacion = self.request.query_params.get("acreditacion")
+        if not correo and not acreditacion:
+            raise ValidationError(
+                "Es necesario especificar 'correo' o 'acreditacion' para realizar la búsqueda."
+            )
 
-            if not bool(correo) ^ bool(acreditacion):
-                raise ValidationError(
-                    "Es necesario especificar 'correo' o 'acreditacion' para realizar la búsqueda."
-                )
+        queryset = Persona.objects.all()
 
-            queryset = Persona.objects.none()
-
-            if correo:
-                queryset = Persona.objects.filter(correo=correo)
-            elif acreditacion:
-                queryset = Persona.objects.filter(acreditacion=acreditacion)
+        # Permitir correo o acreditación
+        if correo:
+            queryset = Persona.objects.filter(correo=correo)
+        if acreditacion:
+            queryset = Persona.objects.filter(acreditacion=acreditacion)
 
         return queryset
 
+
+class PersonaRetrieveUpdate(RetrieveUpdateAPIView):
+    queryset = Persona.objects.all()
+    serializer_class = VerPersonaSerializer
+
+    lookup_field = "correo"
+
     def get_serializer_class(self):
-        if self.action in ["partial_update", "update"]:
+        if self.request.method in ["PUT", "PATCH"]:
             return AsignarAcreditacionSerializer
 
         return super().get_serializer_class()
 
+    def put(self, request, *args, **kwargs):
+        raise MethodNotAllowed("PUT")
 
-# class PersonaList(generics.ListAPIView):
-#     """
-#     Ruta para obtener Personas por correo o acreditación.
-#     """
-#
-#     serializer_class = VerPersonaSerializer
-#
-#     def get_queryset(self):
-#         correo = self.request.query_params.get("correo")
-#         acreditacion = self.request.query_params.get("acreditacion")
-#
-#         # Permitir correo o acreditación (XOR)
-#         if not bool(correo) ^ bool(acreditacion):
-#             raise exceptions.ValidationError(
-#                 "Es necesario especificar 'correo' o 'acreditacion' para realizar la búsqueda."
-#             )
-#
-#         if correo:
-#             queryset = Persona.objects.filter(correo=correo)
-#         elif acreditacion:
-#             queryset = Persona.objects.filter(acreditacion=acreditacion)
-#         else:
-#             queryset = Persona.objects.none()
-#
-#         return queryset
-#
-#
-# class PersonaUpdate(generics.UpdateAPIView):
-#     queryset = Persona.objects.all()
-#     serializer_class = AsignarAcreditacionSerializer
-#
-#     def put(self, request, *args, **kwargs):
-#         raise MethodNotAllowed("PUT")
-#
-#     def update(self, request, *args, **kwargs):
-#         print(request)
-#         return super(PersonaUpdate, self).update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        print(request)
+        return super(PersonaRetrieveUpdate, self).update(request, *args, **kwargs)
 
 
 class TipoPaseViewSet(ReadOnlyModelViewSet):
