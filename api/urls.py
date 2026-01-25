@@ -2,6 +2,7 @@
 
 from django.urls import include, path
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 
 from api import views
 
@@ -13,6 +14,8 @@ router.register(r"presencia", views.PresenciaViewSet, basename="presencia")
 
 urlpatterns = [
     path("", include(router.urls)),
+    # Ruta de login para la API
+    path("login", obtain_auth_token, name="api-login"),
     # Ruta de login para la interfaz web
     path("auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
