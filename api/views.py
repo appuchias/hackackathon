@@ -9,10 +9,11 @@ from api.serializers import (
     AsignarAcreditacionSerializer,
     PaseSerializer,
     PresenciaSerializer,
+    RestriccionAlimentariaSerializer,
     TipoPaseSerializer,
     VerPersonaSerializer,
 )
-from gestion.models import Pase, Persona, Presencia, TipoPase
+from gestion.models import Pase, Persona, Presencia, RestriccionAlimentaria, TipoPase
 
 
 class PersonaList(ListAPIView):
@@ -69,6 +70,15 @@ class TipoPaseViewSet(ReadOnlyModelViewSet):
 
     queryset = TipoPase.objects.all().order_by("inicio_validez")
     serializer_class = TipoPaseSerializer
+
+
+class RestriccionAlimentariaViewSet(ReadOnlyModelViewSet):
+    """
+    Ruta de la API que permite ver el mapa de Restricciones Alimentarias.
+    """
+
+    queryset = RestriccionAlimentaria.objects.all().order_by("nombre")
+    serializer_class = RestriccionAlimentariaSerializer
 
 
 class PaseViewSet(ListModelMixin, CreateModelMixin, RetrieveModelMixin, GenericViewSet):

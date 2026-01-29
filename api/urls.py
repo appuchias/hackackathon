@@ -8,6 +8,7 @@ from api import views
 
 router = routers.DefaultRouter()
 router.register(r"tipo_pase", views.TipoPaseViewSet, basename="tipo_pase")
+router.register(r"restricciones", views.RestriccionAlimentariaViewSet, basename="restriccion_alimentaria")
 router.register(r"pase", views.PaseViewSet, basename="pase")
 router.register(r"presencia", views.PresenciaViewSet, basename="presencia")
 

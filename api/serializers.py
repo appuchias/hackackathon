@@ -6,8 +6,15 @@ from gestion.models import (
     Pase,
     Persona,
     Presencia,
+    RestriccionAlimentaria,
     TipoPase,
 )
+
+
+class RestriccionAlimentariaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestriccionAlimentaria
+        fields = ["id_restriccion", "nombre"]
 
 
 class VerPersonaSerializer(serializers.ModelSerializer):
