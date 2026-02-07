@@ -32,9 +32,9 @@ class PersonaList(ListAPIView):
 
         # Permitir correo o acreditación
         if correo:
-            queryset = Persona.objects.filter(correo=correo)
+            queryset = queryset.filter(correo=correo)
         if acreditacion:
-            queryset = Persona.objects.filter(acreditacion=acreditacion)
+            queryset = queryset.filter(acreditacion=acreditacion)
 
         return queryset
 
