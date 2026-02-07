@@ -1,4 +1,4 @@
-# Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
+# Copyright (C) 2025-2026  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
 
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand, CommandError
