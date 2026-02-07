@@ -468,9 +468,12 @@ def alta(request: HttpRequest):
         persona.acreditacion = datos["acreditacion"]
         persona.save()
 
+        # Crear la Presencia inicial del participante
+        Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
+
         messages.success(
             request,
-            f"Asignada acreditación {persona.acreditacion} a {persona.correo}",
+            f"Asignada acreditación {persona.acreditacion} a {persona.correo} y primer acceso registrado",
         )
         return redirect("alta")
 
