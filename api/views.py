@@ -12,6 +12,7 @@ from api.serializers import (
     RestriccionAlimentariaSerializer,
     TipoPaseSerializer,
     VerPersonaSerializer,
+    PersonaReducidaSerializer,
 )
 from gestion.models import Pase, Persona, Presencia, RestriccionAlimentaria, TipoPase
 
@@ -27,11 +28,6 @@ class PersonaList(ListAPIView):
         correo = self.request.query_params.get("correo")
         acreditacion = self.request.query_params.get("acreditacion")
 
-        if not correo and not acreditacion:
-            raise ValidationError(
-                "Es necesario especificar 'correo' o 'acreditacion' para realizar la búsqueda."
-            )
-
         queryset = Persona.objects.all()
 
         # Permitir correo o acreditación
@@ -41,6 +37,15 @@ class PersonaList(ListAPIView):
             queryset = Persona.objects.filter(acreditacion=acreditacion)
 
         return queryset
+
+    def get_serializer_class(self):
+        correo = self.request.query_params.get("correo")
+        acreditacion = self.request.query_params.get("acreditacion")
+
+        if not correo and not acreditacion:
+            return PersonaReducidaSerializer
+
+        return super().get_serializer_class()
 
 
 class PersonaRetrieveUpdate(RetrieveUpdateAPIView):
