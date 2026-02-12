@@ -204,3 +204,13 @@ div.message.message-error {
 
     background-color: var(--fondo);
 }
+
+#registro-cerrado .titulo {
+    text-align: center;
+    font-size: 3em;
+}
+
+#registro-cerrado .subtitulo {
+    text-align: center;
+    font-size: 1em;
+}

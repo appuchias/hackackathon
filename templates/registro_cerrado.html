@@ -3,8 +3,10 @@
 {% block title %}Registro Cerrado{% endblock title %}
 
 {% block content %}
-<div id="registro-cerrado">
-    <h1>Registro Cerrado</h1>
-    <p>El período de registro ha finalizado y ya no se aceptan nuevas inscripciones.</p>
-</div>
+    {% include 'logo.html' %}
+    <div id="registro-cerrado">
+        <h1 class="titulo">Registro Cerrado</h1>
+        <p class="subtitulo">Hemos cubierto todas las plazas, por lo que ya no aceptamos nuevas inscripciones.</p>
+        <p class="subtitulo">Gracias por tu interés, esperamos verte para la edición del año que viene!</p>
+    </div>
 {% endblock content %}
