@@ -65,8 +65,8 @@ class Command(BaseCommand):
                 "token": str(token_confirmacion_plaza.token)
             })
 
-        with open(archivo, "w") as f:
-            json.dump(lista_personas, f)
+        with open(archivo, "w", encoding="utf-8") as f:
+            json.dump(lista_personas, f, ensure_ascii=False)
 
         logger.info(f"JSON de {personas.count()} personas exportado")
 
