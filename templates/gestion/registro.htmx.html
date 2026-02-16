@@ -1,0 +1,20 @@
+{% if error %}
+    <h2 style="color: var(--rojo);"><i>{{ error }}</i></h2>
+    <script>parado = false;</script>
+{% elif exito %}
+    <h2 style="color: var(--verde);"><i>{{ exito }}</i></h2>
+{% elif persona %}
+    <h2>{{ persona.nombre }}</h2>
+    <ul>
+        <li><b>Talla de camiseta:</b> {{ persona.talla_camiseta }}</li>
+    </ul>
+{% else %}
+    <h2><i>Escanea un QR</i></h2>
+    <script>parado = false;</script>
+{% endif %}
+
+<form hx-post="{% url 'alta' %}" hx-target="#registro-resultado">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" hx-boost="true">
+</form>

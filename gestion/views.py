@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
+from django.db import IntegrityError
 from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import Http404, redirect, render
 from django.template.loader import render_to_string
@@ -445,45 +446,53 @@ def alta(request: HttpRequest):
 
         persona = Persona.objects.filter(correo=datos["persona"]).first()
 
+        context = None
+
         if not persona:
-            # messages.error(request, "No se encontró el participante")
-            # return redirect("alta")
-            return HttpResponse("No se encontró el participante")
+            context = {"error": "No se encontró al participante", "form": Registro()}
+        elif persona.fecha_aceptacion is None:
+            context = {"error": "Participante no aceptado", "form": Registro()}
+        elif persona.acreditacion:
+            context = {"error": "Participante ya registrado", "form": Registro()}
+        elif persona.fecha_confirmacion_plaza is None:
+            context = {
+                "error": "El participante no confirmó su plaza",
+                "form": Registro(),
+            }
+        elif persona.fecha_rechazo_plaza is not None:
+            context = {"error": "El participante rechazó su plaza", "form": Registro()}
 
-        if persona.fecha_aceptacion is None:
-            # messages.error(request, "El participante no ha sido aceptado")
-            # return redirect("alta")
-            return HttpResponse("Participante no aceptado")
-
-        if persona.acreditacion:
-            # messages.error(request, "El participante ya está registrado")
-            # return redirect("alta")
-            return HttpResponse("Participante ya registrado")
+        if context:
+            return render(request, "gestion/registro.htmx.html", context)
 
         # 2. Petición solo con el correo
         # Mostrar los datos y el formulario precompletado con el correo
         if not datos["acreditacion"]:
-            # messages.info(request, f"{persona.nombre} - {persona.talla_camiseta}")
-            # return render(request, "gestion/registro.html", {"form": form})
-            return HttpResponse(f"{persona.nombre} - {persona.talla_camiseta}")
+            return render(
+                request,
+                "gestion/registro.htmx.html",
+                {"persona": persona, "form": form},
+            )
 
         # 3. Petición completa
         # Asignar la acreditación. Página de éxito con timeout y volver a la original
         persona.acreditacion = datos["acreditacion"]
-        persona.save()
+        try:
+            persona.save()
+        except IntegrityError:
+            return render(
+                request,
+                "gestion/registro.htmx.html",
+                {"persona": persona, "form": form, "error": "Acreditación repetida"},
+            )
 
         # Crear la Presencia inicial del participante
         Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
 
-        """
-        messages.success(
+        return render(
             request,
-            f"Asignada acreditación {persona.acreditacion} a {persona.correo} y primer acceso registrado",
-        )
-        return redirect("alta")
-        """
-        return HttpResponse(
-            f"Asignada acreditación {persona.acreditacion} a {persona.correo}",
+            "gestion/registro.htmx.html",
+            {"persona": persona, "form": Registro(), "exito": "Acreditacion asignada"},
         )
 
     messages.error(request, "Datos incorrectos")
