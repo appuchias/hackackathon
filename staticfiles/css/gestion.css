@@ -130,3 +130,52 @@ ul#gestion-index {
     text-align: center;
     color: #777;
 }
+
+.botones-pases {
+    display: flex;
+    gap: 8px;
+}
+
+.botones-pases .boton {
+    flex-grow: 1;
+    text-align: center;
+}
+
+
+/* POPUP */
+.popup {
+    position: fixed;
+    z-index: 9999;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    padding: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #101010B2;
+    /* backdrop-filter: blur(2px); */
+}
+
+.popup-contenido {
+    max-width: 40%;
+
+    padding: 16px 32px;
+    /* padding-top: 0px !important; */
+    border-radius: 16px;
+
+    background-color: var(--claro);
+    box-shadow: 0px 6px 12px rgba(10, 10, 10, 0.7);
+}
+
+@media(max-width: 1000px) {
+    .popup-contenido {
+        max-width: 100%;
+        width: 100%;
+    }
+}

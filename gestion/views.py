@@ -468,10 +468,11 @@ def alta(request: HttpRequest):
         # 2. Petición solo con el correo
         # Mostrar los datos y el formulario precompletado con el correo
         if not datos["acreditacion"]:
+            restricciones = persona.restricciones_alimentarias.all()
             return render(
                 request,
                 "gestion/registro.htmx.html",
-                {"persona": persona, "form": form},
+                {"persona": persona, "form": form, "restricciones": restricciones},
             )
 
         # 3. Petición completa
@@ -480,6 +481,9 @@ def alta(request: HttpRequest):
         try:
             persona.save()
         except IntegrityError:
+            data = form.cleaned_data
+            data['acreditacion'] = None
+            form = Registro(data)
             return render(
                 request,
                 "gestion/registro.htmx.html",
@@ -495,8 +499,11 @@ def alta(request: HttpRequest):
             {"persona": persona, "form": Registro(), "exito": "Acreditacion asignada"},
         )
 
-    messages.error(request, "Datos incorrectos")
-    return render(request, "gestion/registro.html", {"form": form})
+    return render(
+        request,
+        "gestion/registro.htmx.html",
+        {"error": "Datos incorrectos", "form": Registro()},
+    )
 
 
 @require_http_methods(["GET", "POST"])

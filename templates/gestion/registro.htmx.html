@@ -8,13 +8,41 @@
     <ul>
         <li><b>Talla de camiseta:</b> {{ persona.talla_camiseta }}</li>
     </ul>
+
+
+    <div class="popup" id="popup">
+        <div class="popup-contenido">
+            <h1>Detalles</h1>
+            <p>{{ persona.nombre }}</p>
+
+            <ul>
+                <li><b>Talla de camiseta:</b> {{ persona.talla_camiseta }}</li>
+                {% if restricciones %}
+                <li><b>Restricciones alimentarias:</b></li>
+                <ul>
+                    {% for restriccion in restricciones %}
+                        <li>{{ restriccion }}</li>
+                    {% endfor %}
+                    {% if persona.detalle_restricciones_alimentarias %}
+                        <li><b>Observaciones:</b> {{ persona.detalle_restricciones_alimentarias }}</li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+                {% if persona.notas %}
+                    <li><b>Notas:</b> {{ persona.notas }}</li>
+                {% endif %}
+            </ul>
+
+            <span class="boton boton-verde-fill" onclick="boton_popup();">Texto</span>
+        </div>
+    </div>
 {% else %}
     <h2><i>Escanea un QR</i></h2>
     <script>parado = false;</script>
 {% endif %}
 
-<form hx-post="{% url 'alta' %}" hx-target="#registro-resultado">
+<form hx-post="{% url 'alta' %}" hx-target="#registro-resultado" id="form-registro">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="Submit" hx-boost="true">
+    <input type="submit" value="Submit" hx-boost="true" id="form-submit">
 </form>

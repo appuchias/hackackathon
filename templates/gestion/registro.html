@@ -27,8 +27,23 @@
     </div>
 
     <script>
+        var parado = false;
+
         function scan(result) {
-            document.getElementById("registro-resultado").innerHTML = result;
+            if (parado == true) { return 0; }
+            id_persona = document.getElementById("id_persona");
+            id_acreditacion = document.getElementById("id_acreditacion");
+            submit = document.getElementById("form-submit");
+
+            if (id_persona.value == "") {
+                id_persona.value = result;
+                parado = true;
+            }
+            else {
+                id_acreditacion.value = result;
+            }
+
+            submit.click();
         }
 
         const qrScanner = new QrScanner(
@@ -43,6 +58,10 @@
         qrScanner.start();
         // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
 
+        function boton_popup() {
+            document.getElementById("popup").remove();
+            parado = false;
+        }
     </script>
 </div>
 {% endblock content %}
