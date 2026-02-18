@@ -180,10 +180,10 @@ def verificar_correo(request: HttpRequest, token: str):
 
     persona = Persona.objects.get(correo=token_obj.persona.correo)
 
-    if hasattr(persona, "participante"):
+    if persona.tipo() == "Participante":
         subpersona = persona.participante
         form = RevisarParticipanteForm
-    elif hasattr(persona, "mentor"):
+    elif persona.tipo() == "Mentor":
         subpersona = persona.mentor
         form = RevisarMentorForm
     else:
