@@ -31,7 +31,7 @@
         {% if participante.confirmado and not participante.rechazo or token.valido and not participante.rechazo %}
         <a id="rechazar" class="boton boton-rojo" href="/confirmar/{{ token.token }}/rechazar">Rechazar la plaza</a>
         {% endif %}
-        {% if token.valido and not participante.confirmado and not participante.rechazo %}
+        {% if token.valido and not token.usado and not participante.confirmado and not participante.rechazo %}
         <form action="{% url 'aceptar-plaza' token.token %}" method="post">
             {% csrf_token %}
             <button type="submit" id="confirmar" class="boton boton-verde-fill" style="border: 1px solid var(--verde);">Confirmar la plaza</button>

@@ -369,13 +369,13 @@ class Token(models.Model):
         null=True, blank=True, default=None, verbose_name="Fecha de uso"
     )
 
-    @admin.display(boolean=True, ordering="fecha_creacion", description="Usado")
+    @admin.display(boolean=True, ordering="fecha_uso", description="Usado")
     def usado(self):
         return self.fecha_uso is not None
 
-    @admin.display(boolean=True, ordering="fecha_creacion", description="Válido")
+    @admin.display(boolean=True, ordering="fecha_expiracion", description="Válido")
     def valido(self):
-        return self.fecha_expiracion > timezone.now() and not self.usado()
+        return self.fecha_expiracion > timezone.now()
 
     def __str__(self):
         return f"Token de {self.tipo.capitalize()} de {self.persona.nombre}"

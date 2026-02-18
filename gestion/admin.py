@@ -215,7 +215,7 @@ class EstadoPersonaListFilter(admin.SimpleListFilter):
 
 
 class TokenValidoListFilter(admin.SimpleListFilter):
-    title = "Validez"
+    title = "validez"
     parameter_name = "validez"
 
     def lookups(self, request, model_admin):
@@ -230,6 +230,24 @@ class TokenValidoListFilter(admin.SimpleListFilter):
                 return queryset.filter(fecha_expiracion__gte=timezone.now())
             case "expirado":
                 return queryset.filter(fecha_expiracion__lt=timezone.now())
+
+
+class TokenUsadoListFilter(admin.SimpleListFilter):
+    title = "uso"
+    parameter_name = "uso"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("usado", "Usado"),
+            ("no_usado", "No usado"),
+        ]
+
+    def queryset(self, request, queryset):
+        match self.value():
+            case "usado":
+                return queryset.filter(fecha_uso__isnull=False)
+            case "no_usado":
+                return queryset.filter(fecha_uso__isnull=True)
 
 
 class TokenInline(admin.TabularInline):
@@ -544,6 +562,7 @@ class TokenAdmin(admin.ModelAdmin):
     list_filter = [
         "tipo",
         TokenValidoListFilter,
+        TokenUsadoListFilter,
     ]
 
     search_fields = [
