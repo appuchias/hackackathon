@@ -22,11 +22,17 @@ class VerPersonaSerializer(serializers.ModelSerializer):
         many=True, read_only=True
     )
 
+    tipo = serializers.SerializerMethodField()
+
+    def get_tipo(self, obj):
+        return obj.tipo()
+
     class Meta:
         model = Persona
         fields = [
             "correo",
             "nombre",
+            "tipo",
             "dni",
             "restricciones_alimentarias",
             "detalle_restricciones_alimentarias",
@@ -54,9 +60,15 @@ class AsignarAcreditacionSerializer(serializers.ModelSerializer):
 
 
 class PersonaReducidaSerializer(serializers.ModelSerializer):
+
+    tipo = serializers.SerializerMethodField()
+
+    def get_tipo(self, obj):
+        return obj.tipo()
+
     class Meta:
         model = Persona
-        fields = ["correo", "nombre", "acreditacion"]
+        fields = ["correo", "nombre", "acreditacion", "tipo"]
 
 
 class TipoPaseSerializer(serializers.ModelSerializer):
