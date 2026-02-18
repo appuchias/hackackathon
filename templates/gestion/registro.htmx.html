@@ -1,8 +1,9 @@
 {% if error %}
     <h2 style="color: var(--rojo);"><i>{{ error }}</i></h2>
-    <script>parado = false;</script>
+    <script>setTimeout(() => { parado = false; }, 2000);</script>
 {% elif exito %}
     <h2 style="color: var(--verde);"><i>{{ exito }}</i></h2>
+    <script>setTimeout(() => { parado = false; }, 1000);</script>
 {% elif persona %}
     <h2>{{ persona.nombre }}</h2>
     <ul>
@@ -38,7 +39,6 @@
     </div>
 {% else %}
     <h2><i>Escanea un QR</i></h2>
-    <script>parado = false;</script>
 {% endif %}
 
 <form hx-post="{% url 'alta' %}" hx-target="#registro-resultado" id="form-registro">
