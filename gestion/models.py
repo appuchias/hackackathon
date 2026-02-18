@@ -206,6 +206,14 @@ class Persona(PersonaAbstracta):
     def rechazo(self):
         return self.fecha_rechazo_plaza is not None
 
+    def tipo(self):
+        if hasattr(self, "participante"):
+            return "Participante"
+        elif hasattr(self, "mentor"):
+            return "Mentor"
+
+        return "Persona"
+
     def __str__(self):
         return f"{self.nombre} ({self.correo})"
 
