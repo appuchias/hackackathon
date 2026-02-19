@@ -75,19 +75,15 @@ class TipoPaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoPase
         fields = "__all__"
-        # fields = ["id_tipo_pase", "nombre", "inicio_validez"]
 
 
 class PaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pase
         fields = "__all__"
-        # fields = ["id_pase", "fecha", "persona", "tipo_pase"]
-        # depth = 1  # 0 = Solo PK
 
 
 class PresenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Presencia
         fields = "__all__"
-        # fields = ["id_presencia", "persona", "entrada", "salida"]

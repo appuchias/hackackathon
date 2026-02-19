@@ -7,10 +7,26 @@ from rest_framework.authtoken.views import obtain_auth_token
 from api import views
 
 router = routers.DefaultRouter()
-router.register(r"tipo_pase", views.TipoPaseViewSet, basename="tipo_pase")
-router.register(r"restricciones", views.RestriccionAlimentariaViewSet, basename="restriccion_alimentaria")
-router.register(r"pase", views.PaseViewSet, basename="pase")
-router.register(r"presencia", views.PresenciaViewSet, basename="presencia")
+router.register(
+    r"tipo_pase",
+    views.TipoPaseViewSet,
+    basename="tipo_pase",
+)
+router.register(
+    r"restriccion_alimentaria",
+    views.RestriccionAlimentariaViewSet,
+    basename="restriccion_alimentaria",
+)
+router.register(
+    r"pase",
+    views.PaseViewSet,
+    basename="pase",
+)
+router.register(
+    r"presencia",
+    views.PresenciaViewSet,
+    basename="presencia",
+)
 
 
 urlpatterns = [
@@ -21,12 +37,13 @@ urlpatterns = [
     path("auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
 
+# Stats
+urlpatterns += [
+    path("stats", views.StatsView.as_view(), name="stats"),
+]
+
+# Personas
 urlpatterns += [
     path("persona", views.PersonaList.as_view()),
     path("persona/<correo>/", views.PersonaRetrieveUpdate.as_view()),
-    # path("presencia/<acreditacion>/<accion>", views.PresenciaAccion.as_view()),
-]
-
-urlpatterns += [
-    path("stats", views.StatsView.as_view(), name="stats"),
 ]
