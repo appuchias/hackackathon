@@ -26,3 +26,7 @@ urlpatterns += [
     path("persona/<correo>/", views.PersonaRetrieveUpdate.as_view()),
     # path("presencia/<acreditacion>/<accion>", views.PresenciaAccion.as_view()),
 ]
+
+urlpatterns += [
+    path("stats", views.StatsView.as_view(), name="stats"),
+]

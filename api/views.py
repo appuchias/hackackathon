@@ -1,5 +1,7 @@
 # Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
 
+from django.db.models import OuterRef, Subquery
+from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
@@ -14,7 +16,16 @@ from api.serializers import (
     VerPersonaSerializer,
     PersonaReducidaSerializer,
 )
-from gestion.models import Pase, Persona, Presencia, RestriccionAlimentaria, TipoPase
+from api.throttlers import BurstStatsThrottler
+from gestion.models import (
+    Mentor,
+    Pase,
+    Persona,
+    Presencia,
+    RestriccionAlimentaria,
+    TipoPase,
+    Participante,
+)
 
 
 class PersonaList(ListAPIView):
@@ -123,6 +134,47 @@ class PresenciaViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         return MethodNotAllowed("DELETE")
+
+
+class StatsView(ListAPIView):
+
+    throttle_classes = [BurstStatsThrottler]
+
+    def list(self, request, *args, **kwargs):
+        stats = dict()
+
+        # Subconsulta para obtener el valor de la salida de la última presencia de una persona
+        ultima_presencia_salida = (
+            Presencia.objects.filter(persona=OuterRef("pk"))
+            .order_by("-id_presencia")
+            .values("salida")[:1]
+        )
+
+        participantes = Participante.objects.all()
+        participantes_acreditados = participantes.filter(acreditacion__isnull=False)
+        participantes_dentro = participantes_acreditados.annotate(
+            ultima_presencia_salida=Subquery(ultima_presencia_salida)
+        ).filter(ultima_presencia_salida__isnull=True)
+
+        stats["participantes"] = {
+            "total": participantes.count(),
+            "acreditados": participantes_acreditados.count(),
+            "dentro": participantes_dentro.count(),
+        }
+
+        mentores = Mentor.objects.all()
+        mentores_acreditados = mentores.filter(acreditacion__isnull=False)
+        mentores_dentro = mentores_acreditados.annotate(
+            ultima_presencia_salida=Subquery(ultima_presencia_salida)
+        ).filter(ultima_presencia_salida__isnull=True)
+
+        stats["mentores"] = {
+            "total": mentores.count(),
+            "acreditados": mentores_acreditados.count(),
+            "dentro": mentores_dentro.count(),
+        }
+
+        return JsonResponse(stats)
 
 
 # class PresenciaAccion(APIView):
