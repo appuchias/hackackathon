@@ -108,3 +108,28 @@ Body:
 >
 > - No es necesario incluir los 3 atributos. Incluir solo los que se quieran modificar.
 > - `entrada` y `salida` deben ser un string en ISO 8601 válido o bien `null`.
+
+
+## Estadísticas
+
+### GET (/api/stats)
+
+Devuelve los recuentos de participantes y mentores que pueden asistir al evento
+en distintas agrupaciones.
+
+Formato de respuesta:
+
+```json
+{
+  "participantes": {
+    "total": 5,
+    "acreditados": 1,
+    "dentro": 1
+  },
+  "mentores": {
+    "total": 2,
+    "acreditados": 1,
+    "dentro": 1
+  }
+}
+```
