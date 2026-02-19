@@ -150,7 +150,10 @@ class StatsView(ListAPIView):
             .values("salida")[:1]
         )
 
-        participantes = Participante.objects.all()
+        participantes = Participante.objects.filter(
+            fecha_confirmacion_plaza__isnull=False,
+            fecha_rechazo_plaza__isnull=True,
+        )
         participantes_acreditados = participantes.filter(acreditacion__isnull=False)
         participantes_dentro = participantes_acreditados.annotate(
             ultima_presencia_salida=Subquery(ultima_presencia_salida)
@@ -162,7 +165,9 @@ class StatsView(ListAPIView):
             "dentro": participantes_dentro.count(),
         }
 
-        mentores = Mentor.objects.all()
+        mentores = Mentor.objects.filter(
+            fecha_confirmacion_plaza__isnull=False,
+            fecha_rechazo_plaza__isnull=True,)
         mentores_acreditados = mentores.filter(acreditacion__isnull=False)
         mentores_dentro = mentores_acreditados.annotate(
             ultima_presencia_salida=Subquery(ultima_presencia_salida)
