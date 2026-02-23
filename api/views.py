@@ -1,5 +1,6 @@
 # Copyright (C) 2025-now  p.fernandezf <p@fernandezf.es> & iago.rivas <delthia@delthia.com>
 
+from django.conf import settings
 from django.db.models import OuterRef, Subquery
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
@@ -75,7 +76,13 @@ class PersonaRetrieveUpdate(RetrieveUpdateAPIView):
         raise MethodNotAllowed("PUT")
 
     def update(self, request, *args, **kwargs):
-        print(request)
+
+        # Añadir una presencia con entrada al inicio del evento en el momento de asignar la acreditación
+        if not Presencia.objects.filter(persona=self.get_object()).exists():
+            Presencia(
+                persona=self.get_object(), entrada=settings.FECHA_INICIO_EVENTO
+            ).save()
+
         return super(PersonaRetrieveUpdate, self).update(request, *args, **kwargs)
 
 
