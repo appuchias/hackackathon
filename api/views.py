@@ -3,35 +3,38 @@
 from django.conf import settings
 from django.db.models import OuterRef, Subquery
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 
 from api.serializers import (
     AsignarAcreditacionSerializer,
     PaseSerializer,
+    PersonaReducidaSerializer,
     PresenciaSerializer,
     RestriccionAlimentariaSerializer,
     TipoPaseSerializer,
     VerPersonaSerializer,
-    PersonaReducidaSerializer,
 )
 from api.throttlers import BurstStatsThrottler
 from gestion.models import (
     Mentor,
+    Participante,
     Pase,
     Persona,
     Presencia,
     RestriccionAlimentaria,
     TipoPase,
-    Participante,
 )
 
 
 class PersonaList(ListAPIView):
     """
-    Ruta para obtener Personas por correo o acreditación.
+    Ruta para obtener Personas.
+
+    Sin filtros se muestran las personas de forma reducida.
+    Si se filtra por correo o acreditación se obtiene una vista detallada.
     """
 
     serializer_class = VerPersonaSerializer
@@ -88,7 +91,7 @@ class PersonaRetrieveUpdate(RetrieveUpdateAPIView):
 
 class TipoPaseViewSet(ReadOnlyModelViewSet):
     """
-    Ruta de la API que permite ver los Tipos de Pase disponibles.
+    Ruta para ver los Tipos de Pase disponibles.
     """
 
     queryset = TipoPase.objects.all().order_by("inicio_validez")
@@ -97,7 +100,7 @@ class TipoPaseViewSet(ReadOnlyModelViewSet):
 
 class RestriccionAlimentariaViewSet(ReadOnlyModelViewSet):
     """
-    Ruta de la API que permite ver el mapa de Restricciones Alimentarias.
+    Ruta para ver las Restricciones Alimentarias.
     """
 
     queryset = RestriccionAlimentaria.objects.all().order_by("nombre")
@@ -106,7 +109,7 @@ class RestriccionAlimentariaViewSet(ReadOnlyModelViewSet):
 
 class PaseViewSet(ListModelMixin, CreateModelMixin, RetrieveModelMixin, GenericViewSet):
     """
-    Ruta de la API que permite ver, crear y modificar pases.
+    Ruta para ver y crear pases.
     """
 
     serializer_class = PaseSerializer
@@ -124,7 +127,7 @@ class PaseViewSet(ListModelMixin, CreateModelMixin, RetrieveModelMixin, GenericV
 
 class PresenciaViewSet(ModelViewSet):
     """
-    Ruta de la API que permite ver, crear y modificar presencias.
+    Ruta para ver, crear y modificar presencias.
     """
 
     serializer_class = PresenciaSerializer
@@ -144,6 +147,9 @@ class PresenciaViewSet(ModelViewSet):
 
 
 class StatsView(ListAPIView):
+    """
+    Ruta con información agregada de los participantes
+    """
 
     throttle_classes = [BurstStatsThrottler]
 
@@ -174,7 +180,8 @@ class StatsView(ListAPIView):
 
         mentores = Mentor.objects.filter(
             fecha_confirmacion_plaza__isnull=False,
-            fecha_rechazo_plaza__isnull=True,)
+            fecha_rechazo_plaza__isnull=True,
+        )
         mentores_acreditados = mentores.filter(acreditacion__isnull=False)
         mentores_dentro = mentores_acreditados.annotate(
             ultima_presencia_salida=Subquery(ultima_presencia_salida)
