@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
         for persona in personas:
             if hasattr(persona, "participante"):
-                tipo = "persona"
+                tipo = "participante"
             else:
                 tipo = "mentor"
 
