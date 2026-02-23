@@ -187,6 +187,10 @@ div.message.message-error {
 .ml-auto { margin-left: auto; }
 .mr-0 { margin-right: 0; }
 .mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.m-0 { margin: 0; }
+.text-center { text-align: center }
+.hidden { display: none; }
 
 
 #verificacion-incorrecta {

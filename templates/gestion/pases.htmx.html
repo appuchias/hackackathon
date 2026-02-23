@@ -1,5 +1,5 @@
 {% if limpia %}
-    <h2><i>Escanea un pase</i></h2>
+    <h2><i>Escanea una acreditación</i></h2>
     <script>parado = false;</script>
 {% elif error %}
     <h2 style="color: var(--rojo);"><i>Error: No existe la acreditación</i></h2>
@@ -12,9 +12,8 @@
     </div>
 {% endif %}
 
-<form hx-post="{% url 'pases' %}" hx-target="#pases-resultado" method="post" id="form-pases" hx-boost="true">
+<form hx-post="{% url 'pases' %}" hx-target="#pases-resultado" method="post" id="form-pases" class="hidden">
     {% csrf_token %}
     {{ form }}
+    <input type="submit" value="Submit" form="form-pases" id="form-submit">
 </form>
-
-<input type="submit" value="Submit" form="form-pases" id="form-submit">

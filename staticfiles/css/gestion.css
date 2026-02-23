@@ -125,7 +125,8 @@ ul#gestion-index {
     border-radius: 1em 1em 0 0;
 }
 
-#pases-resultado h2 {
+#pases-resultado h2,
+#registro-resultado h2 {
     margin-top: 0;
     text-align: center;
     color: #777;

@@ -578,7 +578,11 @@ def pases(request: HttpRequest):
                 request, "gestion/pases.htmx.html", {"pases": pases, "form": form}
             )
 
-    return HttpResponse("Datos incorrectos")
+    return render(
+        request,
+        "gestion/pases.htmx.html",
+        {"form": form, "error": "Datos incorrectos"},
+    )
 
 
 @require_http_methods(["GET"])

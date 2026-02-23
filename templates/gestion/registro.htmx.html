@@ -5,18 +5,14 @@
     <h2 style="color: var(--verde);"><i>{{ exito }}</i></h2>
     <script>setTimeout(() => { parado = false; }, 1000);</script>
 {% elif persona %}
-    <h2>{{ persona.nombre }}</h2>
-    <ul>
-        <li><b>Talla de camiseta:</b> {{ persona.talla_camiseta }}</li>
-    </ul>
-
+    <h2 style="color: #f0f0f0" class="m-0">{{ persona.nombre }}</h2>
+    <p class="m-0 text-center">Talla {{ persona.talla_camiseta }} · {% if restricciones %}Con restricciones{% else %}Sin restricciones{% endif %}</p>
 
     <div class="popup" id="popup">
         <div class="popup-contenido">
-            <h1>Detalles</h1>
-            <p>{{ persona.nombre }}</p>
+            <h1 class="mb-0"><i>{{ persona.nombre }}</i></h1>
 
-            <ul>
+            <ul class="mt-0">
                 <li><b>Talla de camiseta:</b> {{ persona.talla_camiseta }}</li>
                 {% if restricciones %}
                 <li><b>Restricciones alimentarias:</b></li>
@@ -34,14 +30,16 @@
                 {% endif %}
             </ul>
 
-            <span class="boton boton-verde-fill" onclick="boton_popup();">Texto</span>
+            <div class="botones-pases">
+                <span class="boton boton-verde-fill" onclick="boton_popup();">Asignar acreditación</span>
+            </div>
         </div>
     </div>
 {% else %}
     <h2><i>Escanea un QR</i></h2>
 {% endif %}
 
-<form hx-post="{% url 'alta' %}" hx-target="#registro-resultado" id="form-registro">
+<form hx-post="{% url 'alta' %}" hx-target="#registro-resultado" id="form-registro" class="hidden">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit" hx-boost="true" id="form-submit">
