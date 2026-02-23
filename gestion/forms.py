@@ -164,6 +164,11 @@ class Registro(forms.Form):
     )
 
 
+class ConsultaForm(forms.Form):
+    persona = forms.CharField(label="Correo de la persona", max_length=100, required=False)
+    acreditacion = forms.CharField(label="Acreditación de la persona", max_length=6, required=False)
+
+
 # Necesario porque se accede a la persona por la acreditación
 class PaseForm(forms.Form):
     tipo_pase = forms.ModelChoiceField(

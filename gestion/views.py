@@ -19,6 +19,7 @@ from django.views.decorators.http import require_http_methods
 
 from gestion.forms import (
     ColaboradorForm,
+    ConsultaForm,
     EditarPresenciaForm,
     MentorForm,
     NormalizacionForm,
@@ -482,7 +483,7 @@ def alta(request: HttpRequest):
             persona.save()
         except IntegrityError:
             data = form.cleaned_data
-            data['acreditacion'] = None
+            data["acreditacion"] = None
             form = Registro(data)
             return render(
                 request,
@@ -700,42 +701,72 @@ def presencia_editar(request: HttpRequest, id_presencia: str):
     )
 
 
-@require_http_methods(["GET"])
-def info_participante(request: HttpRequest, correo: str):
-    persona = Persona.objects.filter(correo=correo).first()
-    if not persona:
-        logger.debug("Solicitada info de correo inexistente", extra={"correo": correo})
-        messages.error(request, "No existe ninguna persona con ese correo.")
-        return render(request, "vacio.html", {"titulo": "Info persona"})
+@require_http_methods(["GET", "POST"])
+def info_participante(request: HttpRequest):
+    if request.method == "GET":
+        return render(request, "gestion/consulta.html", {"form": ConsultaForm})
 
-    # Encontrar Participante/Mentor para el formulario
-    if hasattr(persona, "participante"):
-        form = RevisarParticipanteForm(instance=Participante.objects.get(correo=correo))
-    elif hasattr(persona, "mentor"):
-        #! Formulario equivalente para mentores
-        form = RevisarParticipanteForm(instance=Mentor.objects.get(correo=correo))
-    else:
-        messages.error(
-            request,
-            "La persona encontrada con ese correo no es ni participante ni mentor.",
+    form = ConsultaForm(request.POST)
+
+    if form.is_valid():
+        # persona = Persona.objects.filter(correo=correo).first()
+
+        datos = form.cleaned_data
+
+        if datos["persona"]:
+            persona = Persona.objects.filter(correo=datos["persona"]).first()
+        elif datos["acreditacion"]:
+            persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
+        else:
+            return render(
+                request,
+                "gestion/consulta.html",
+                {"error": "Sin parámetros", "form": ConsultaForm()},
+            )
+
+        if not persona:
+            return render(
+                request,
+                "gestion/consulta.html",
+                {"error": "Datos incorrectos", "form": ConsultaForm()},
+            )
+
+        correo = persona.correo
+
+        # Encontrar Participante/Mentor para el formulario
+        if hasattr(persona, "participante"):
+            form = RevisarParticipanteForm(instance=Participante.objects.get(correo=correo))
+        elif hasattr(persona, "mentor"):
+            #! Formulario equivalente para mentores
+            form = RevisarParticipanteForm(instance=Mentor.objects.get(correo=correo))
+        else:
+            messages.error(
+                request,
+                "La persona encontrada con ese correo no es ni participante ni mentor.",
+            )
+            return render(request, "vacio.html")
+
+        # Gestionar permisos
+        if isinstance(form, RevisarParticipanteForm):
+            if not request.user.has_perm("gestion.ver_cv_participante"):
+                if "cv" in form.fields:
+                    del form.fields["cv"]
+            if not request.user.has_perm("gestion.ver_dni_telefono_participante"):
+                if "dni" in form.fields:
+                    del form.fields["dni"]
+                if "telefono" in form.fields:
+                    del form.fields["telefono"]
+
+        logger.info(
+            f"Mostrando info de participante a {request.user}", extra={"correo": correo}
         )
-        return render(request, "vacio.html")
+        return render(request, "verificacion_correcta.html", {"form": form})
 
-    # Gestionar permisos
-    if isinstance(form, RevisarParticipanteForm):
-        if not request.user.has_perm("gestion.ver_cv_participante"):
-            if "cv" in form.fields:
-                del form.fields["cv"]
-        if not request.user.has_perm("gestion.ver_dni_telefono_participante"):
-            if "dni" in form.fields:
-                del form.fields["dni"]
-            if "telefono" in form.fields:
-                del form.fields["telefono"]
-
-    logger.info(
-        f"Mostrando info de participante a {request.user}", extra={"correo": correo}
+    return render(
+        request,
+        "gestion/consulta.html",
+        {"error": "Datos incorrectos", "form": ConsultaForm()},
     )
-    return render(request, "verificacion_correcta.html", {"form": form})
 
 
 @require_http_methods(["GET", "POST"])

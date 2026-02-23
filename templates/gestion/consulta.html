@@ -1,0 +1,85 @@
+{% extends 'marco.html' %}
+
+{% block title %}Consulta{% endblock title %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'js/qr-scanner.umd.min.js' %}"></script>
+<link href="{% static 'css/gestion.css' %}" media="all" rel="stylesheet">
+{% endblock head %}
+
+
+{% block content %}
+<style>
+    div#content {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    form div {
+        display: flex;
+        flex-direction: column;
+
+        margin-top: 0.5em;
+    }
+
+    input[type=text] {
+        background-color: var(--claro);
+        border: 2px solid var(--claro);
+        outline: none;
+        color: var(--texto);
+
+        padding: 8px;
+        border-radius: 4px;
+
+        font-size: 1em;
+    }
+</style>
+
+<div id="gestion-consulta">
+    <div id="gestion-camara">
+        <h1>Consulta</h1>
+        <video id="qr-video"></video>
+    </div>
+
+    <div id="consulta-info">
+        {% if error %}
+            <h2 style="color: var(--rojo);" class="mb-0"><i>{{ error }}</i></h2>
+        {% else %}
+            <h2 class="mb-0"><i>Escanea una acreditación</i></h2>
+        {% endif %}
+        <p class="text-center mt-0"><i>o introduce uno de los datos manualmente</i></p>
+
+        <form action="{% url 'info-participante' %}" method="post" id="form-consulta">
+            {% csrf_token %}
+            {{ form }}
+            <div class="botones-pases">
+            <input type="submit" value="Consultar" id="form-submit" class="boton boton-verde-fill" style="color: white; font-weight: bold; margin-top: 1em;">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        var parado = false;
+
+        function scan(result) {
+            if (parado == true) { return 0; }
+
+            document.getElementById("id_acreditacion").value = result;
+            document.getElementById("form-submit").click();
+            setTimeout(() => { parado = false; }, 2000);
+        }
+
+        const qrScanner = new QrScanner(
+            document.getElementById("qr-video"),
+            result => scan(result.data),
+            {
+                maxScansPerSecond: 15
+            }
+        );
+
+        QrScanner.listCameras();
+        qrScanner.start();
+    </script>
+</div>
+{% endblock content %}
