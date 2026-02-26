@@ -492,7 +492,8 @@ def alta(request: HttpRequest):
             )
 
         # Crear la Presencia inicial del participante
-        Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
+        if not Presencia.objects.filter(persona=persona).exists():
+            Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
 
         return render(
             request,
