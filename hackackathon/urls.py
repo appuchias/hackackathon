@@ -10,6 +10,7 @@ admin.site.site_header = "Hackackathon Admin"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("gestion.urls")),
+    path("api/", include("api.urls")),
 ]
 
 # Válido durante el desarrollo
