@@ -164,12 +164,18 @@ class Registro(forms.Form):
     )
 
 
+class ConsultaForm(forms.Form):
+    persona = forms.CharField(label="Correo de la persona", max_length=100, required=False)
+    acreditacion = forms.CharField(label="Acreditación de la persona", max_length=6, required=False)
+
+
 # Necesario porque se accede a la persona por la acreditación
 class PaseForm(forms.Form):
     tipo_pase = forms.ModelChoiceField(
         queryset=TipoPase.objects.all().order_by("inicio_validez")
     )
     acreditacion = forms.CharField(label="Acreditación", max_length=6)
+    confirmar = forms.BooleanField(label="confirmar", required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

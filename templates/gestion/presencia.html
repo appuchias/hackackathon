@@ -4,17 +4,32 @@
 {% load static %}
 
 {% block head %}
-<link href="{% static 'css/login.css' %}" media="all" rel="stylesheet">
+{% if not persona %}
+    <script src="{% static 'js/htmx.minjs' %}"></script>
+    <script src="{% static 'js/qr-scanner.umd.min.js' %}"></script>
+{% endif %}
+<link href="{% static 'css/gestion.css' %}" media="all" rel="stylesheet">
+<!--<link href="{% static 'css/login.css' %}" media="all" rel="stylesheet">-->
 {% endblock head %}
 
 {% block content %}
+<style>
+    div#content {
+        max-width: 100%;
+        width: 100%;
+    }
+</style>
+
 <div id="gestion-presencia">
     <h1>Presencia</h1>
 
     {% if not persona %}
+    <div id="gestion-camara">
+        <video id="qr-video"></video>
+    </div>
     <form action="{% url 'presencia' %}" method="get">
         <input type="text" id="acreditacion" name="acreditacion">
-        <button type="submit">Buscar</button>
+        <button type="submit" id="form-submit">Buscar</button>
     </form>
 
     {% else %}
@@ -94,5 +109,24 @@
     </div>
 
     {% endif %}
+
+    <script>
+        function scan(result) {
+            document.getElementById("acreditacion").value = result;
+            document.getElementById("form-submit").click();
+
+        }
+
+        const qrScanner = new QrScanner(
+            document.getElementById("qr-video"),
+            result => scan(result.data),
+            {
+                maxScansPerSecond: 15
+            }
+        );
+
+        QrScanner.listCameras();
+        qrScanner.start();
+    </script>
 </div>
 {% endblock content %}

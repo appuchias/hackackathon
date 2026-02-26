@@ -1,0 +1,19 @@
+{% if limpia %}
+    <h2><i>Escanea una acreditación</i></h2>
+    <script>parado = false;</script>
+{% elif error %}
+    <h2 style="color: var(--rojo);"><i>Error: No existe la acreditación</i></h2>
+    <script>parado = false;</script>
+{% else %}
+    <h2><i>Hay <span style="color: var(--{% if pases == 0 %}verde{% else %}naranja{% endif %})">{{ pases }}</span> pases.</i></h2>
+    <div class="botones-pases">
+        <a id="rechazar" class="boton boton-rojo" hx-get="?htmx=true" hx-target="#pases-resultado">Atrás</a>
+        <input type="submit" value="Crear el pase" form="form-pases" class="boton boton-verde-fill" style="border: 1px solid var(--verde); font-size: 100%; font-family: Nunito, sans-serif, system-ui;">
+    </div>
+{% endif %}
+
+<form hx-post="{% url 'pases' %}" hx-target="#pases-resultado" method="post" id="form-pases" class="hidden">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" form="form-pases" id="form-submit">
+</form>

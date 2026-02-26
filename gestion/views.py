@@ -9,7 +9,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
-from django.http import FileResponse, HttpRequest
+from django.db import IntegrityError
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import Http404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -17,12 +18,13 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from gestion.forms import (
+    ColaboradorForm,
+    ConsultaForm,
     EditarPresenciaForm,
     MentorForm,
     NormalizacionForm,
     ParticipanteForm,
     PaseForm,
-    ColaboradorForm,
     Registro,
     RevisarMentorForm,
     RevisarParticipanteForm,
@@ -39,10 +41,10 @@ from gestion.models import (
 )
 from gestion.utils import (
     enviar_correo_aceptacion_plaza,
+    enviar_correo_colaborador,
     enviar_correo_rechazo_plaza,
     enviar_correo_verificacion,
     enviar_correo_verificacion_correcta,
-    enviar_correo_colaborador,
 )
 
 logger = logging.getLogger(__name__)
@@ -443,42 +445,66 @@ def alta(request: HttpRequest):
     if form.is_valid():
         datos = form.cleaned_data
 
-        persona = Persona.objects.filter(correo=datos["correo"]).first()
+        persona = Persona.objects.filter(correo=datos["persona"]).first()
+
+        context = None
 
         if not persona:
-            messages.error(request, "No se encontró el participante")
-            return redirect("alta")
+            context = {"error": "No se encontró al participante", "form": Registro()}
+        elif persona.fecha_aceptacion is None:
+            context = {"error": "Participante no aceptado", "form": Registro()}
+        elif persona.acreditacion:
+            context = {"error": "Participante ya registrado", "form": Registro()}
+        elif persona.fecha_confirmacion_plaza is None:
+            context = {
+                "error": "El participante no confirmó su plaza",
+                "form": Registro(),
+            }
+        elif persona.fecha_rechazo_plaza is not None:
+            context = {"error": "El participante rechazó su plaza", "form": Registro()}
 
-        if persona.fecha_aceptacion is None:
-            messages.error(request, "El participante no ha sido aceptado")
-            return redirect("alta")
-
-        if persona.acreditacion:
-            messages.error(request, "El participante ya está registrado")
-            return redirect("alta")
+        if context:
+            return render(request, "gestion/registro.htmx.html", context)
 
         # 2. Petición solo con el correo
         # Mostrar los datos y el formulario precompletado con el correo
         if not datos["acreditacion"]:
-            messages.info(request, f"{persona.nombre} - {persona.talla_camiseta}")
-            return render(request, "gestion/registro.html", {"form": form})
+            restricciones = persona.restricciones_alimentarias.all()
+            return render(
+                request,
+                "gestion/registro.htmx.html",
+                {"persona": persona, "form": form, "restricciones": restricciones},
+            )
 
         # 3. Petición completa
         # Asignar la acreditación. Página de éxito con timeout y volver a la original
         persona.acreditacion = datos["acreditacion"]
-        persona.save()
+        try:
+            persona.save()
+        except IntegrityError:
+            data = form.cleaned_data
+            data["acreditacion"] = None
+            form = Registro(data)
+            return render(
+                request,
+                "gestion/registro.htmx.html",
+                {"persona": persona, "form": form, "error": "Acreditación repetida"},
+            )
 
         # Crear la Presencia inicial del participante
         Presencia(persona=persona, entrada=settings.FECHA_INICIO_EVENTO).save()
 
-        messages.success(
+        return render(
             request,
-            f"Asignada acreditación {persona.acreditacion} a {persona.correo} y primer acceso registrado",
+            "gestion/registro.htmx.html",
+            {"persona": persona, "form": Registro(), "exito": "Acreditacion asignada"},
         )
-        return redirect("alta")
 
-    messages.error(request, "Datos incorrectos")
-    return render(request, "gestion/registro.html", {"form": form})
+    return render(
+        request,
+        "gestion/registro.htmx.html",
+        {"error": "Datos incorrectos", "form": Registro()},
+    )
 
 
 @require_http_methods(["GET", "POST"])
@@ -492,7 +518,21 @@ def pases(request: HttpRequest):
         return render(request, "gestion/pases.html", {"form": PaseForm()})
 
     if request.method == "GET":
-        return render(request, "gestion/pases.html", {"form": PaseForm()})
+        return render(
+            request,
+            (
+                "gestion/pases.htmx.html"
+                if request.GET.get("htmx") == "true"
+                else "gestion/pases.html"
+            ),
+            {
+                "form": PaseForm(),
+                "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                .order_by("inicio_validez")
+                .first(),
+                "limpia": True,
+            },
+        )
 
     form = PaseForm(request.POST)
 
@@ -500,17 +540,50 @@ def pases(request: HttpRequest):
         datos = form.cleaned_data
         persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
 
-        if persona:
+        if not persona:
+            return render(
+                request,
+                "gestion/pases.htmx.html",
+                {
+                    "form": PaseForm(),
+                    "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                    .order_by("inicio_validez")
+                    .first(),
+                    "error": True,
+                },
+            )
+
+        pases = Pase.objects.filter(
+            persona=persona, tipo_pase=datos["tipo_pase"]
+        ).count()
+
+        if datos["confirmar"]:
             pase = Pase(persona=persona, tipo_pase=datos["tipo_pase"])
             pase.save()
-            messages.success(request, f"Pase creado")
-            return redirect("pases")
+            return render(
+                request,
+                "gestion/pases.htmx.html",
+                {
+                    "form": PaseForm(),
+                    "pase": TipoPase.objects.filter(inicio_validez__lte=timezone.now())
+                    .order_by("inicio_validez")
+                    .first(),
+                    "limpia": True,
+                },
+            )
+        else:
+            data = form.data.copy()
+            data["confirmar"] = True
+            form.data = data
+            return render(
+                request, "gestion/pases.htmx.html", {"pases": pases, "form": form}
+            )
 
-        messages.error(request, "No existe la acreditación")
-        return render(request, "gestion/pases.html", {"form": PaseForm()})
-
-    messages.error(request, "Datos incorrectos")
-    return render(request, "gestion/pases.html", {"form": form})
+    return render(
+        request,
+        "gestion/pases.htmx.html",
+        {"form": form, "error": "Datos incorrectos"},
+    )
 
 
 @require_http_methods(["GET"])
@@ -628,42 +701,72 @@ def presencia_editar(request: HttpRequest, id_presencia: str):
     )
 
 
-@require_http_methods(["GET"])
-def info_participante(request: HttpRequest, correo: str):
-    persona = Persona.objects.filter(correo=correo).first()
-    if not persona:
-        logger.debug("Solicitada info de correo inexistente", extra={"correo": correo})
-        messages.error(request, "No existe ninguna persona con ese correo.")
-        return render(request, "vacio.html", {"titulo": "Info persona"})
+@require_http_methods(["GET", "POST"])
+def info_participante(request: HttpRequest):
+    if request.method == "GET":
+        return render(request, "gestion/consulta.html", {"form": ConsultaForm})
 
-    # Encontrar Participante/Mentor para el formulario
-    if hasattr(persona, "participante"):
-        form = RevisarParticipanteForm(instance=Participante.objects.get(correo=correo))
-    elif hasattr(persona, "mentor"):
-        #! Formulario equivalente para mentores
-        form = RevisarParticipanteForm(instance=Mentor.objects.get(correo=correo))
-    else:
-        messages.error(
-            request,
-            "La persona encontrada con ese correo no es ni participante ni mentor.",
+    form = ConsultaForm(request.POST)
+
+    if form.is_valid():
+        # persona = Persona.objects.filter(correo=correo).first()
+
+        datos = form.cleaned_data
+
+        if datos["persona"]:
+            persona = Persona.objects.filter(correo=datos["persona"]).first()
+        elif datos["acreditacion"]:
+            persona = Persona.objects.filter(acreditacion=datos["acreditacion"]).first()
+        else:
+            return render(
+                request,
+                "gestion/consulta.html",
+                {"error": "Sin parámetros", "form": ConsultaForm()},
+            )
+
+        if not persona:
+            return render(
+                request,
+                "gestion/consulta.html",
+                {"error": "Datos incorrectos", "form": ConsultaForm()},
+            )
+
+        correo = persona.correo
+
+        # Encontrar Participante/Mentor para el formulario
+        if hasattr(persona, "participante"):
+            form = RevisarParticipanteForm(instance=Participante.objects.get(correo=correo))
+        elif hasattr(persona, "mentor"):
+            #! Formulario equivalente para mentores
+            form = RevisarParticipanteForm(instance=Mentor.objects.get(correo=correo))
+        else:
+            messages.error(
+                request,
+                "La persona encontrada con ese correo no es ni participante ni mentor.",
+            )
+            return render(request, "vacio.html")
+
+        # Gestionar permisos
+        if isinstance(form, RevisarParticipanteForm):
+            if not request.user.has_perm("gestion.ver_cv_participante"):
+                if "cv" in form.fields:
+                    del form.fields["cv"]
+            if not request.user.has_perm("gestion.ver_dni_telefono_participante"):
+                if "dni" in form.fields:
+                    del form.fields["dni"]
+                if "telefono" in form.fields:
+                    del form.fields["telefono"]
+
+        logger.info(
+            f"Mostrando info de participante a {request.user}", extra={"correo": correo}
         )
-        return render(request, "vacio.html")
+        return render(request, "verificacion_correcta.html", {"form": form})
 
-    # Gestionar permisos
-    if isinstance(form, RevisarParticipanteForm):
-        if not request.user.has_perm("gestion.ver_cv_participante"):
-            if "cv" in form.fields:
-                del form.fields["cv"]
-        if not request.user.has_perm("gestion.ver_dni_telefono_participante"):
-            if "dni" in form.fields:
-                del form.fields["dni"]
-            if "telefono" in form.fields:
-                del form.fields["telefono"]
-
-    logger.info(
-        f"Mostrando info de participante a {request.user}", extra={"correo": correo}
+    return render(
+        request,
+        "gestion/consulta.html",
+        {"error": "Datos incorrectos", "form": ConsultaForm()},
     )
-    return render(request, "verificacion_correcta.html", {"form": form})
 
 
 @require_http_methods(["GET", "POST"])

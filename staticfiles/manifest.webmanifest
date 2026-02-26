@@ -1,0 +1,36 @@
+{
+    "background_color": "#ffd230",
+    "theme_color": "#fdd230",
+    "description": "Sistema de gestión de hackackathones",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/static/icons/icono-256.png",
+            "sizes": "256x256",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "name": "HackUDC 2026",
+    "short_name": "HackUDC",
+    "start_url": "/gestion",
+    "shortcuts": [
+        {
+            "name": "Pases",
+            "url": "/gestion/pases",
+            "description": "Pases de comida",
+            "icons": [
+                {
+                    "src": "/static/icons/icono-256.png"
+                }
+            ]
+        }
+    ],
+    "dir": "ltr",
+    "scope": "https://hackudc.local.delthia.com",
+    "lang": "es",
+    "orientation": "portrait",
+    "categories": [
+        "utilities"
+    ]
+}

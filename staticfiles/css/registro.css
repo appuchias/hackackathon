@@ -13,6 +13,12 @@ form {
     background-color: var(--fondo);
 }
 
+@media(max-width: 1000px) {
+    form {
+        margin: 0;
+    }
+}
+
 form div {
     display: flex;
     flex-direction: column;
