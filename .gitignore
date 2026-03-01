@@ -3,6 +3,7 @@
 db.sqlite3*
 
 # Assets
+cvs/
 media/
 static/
 
