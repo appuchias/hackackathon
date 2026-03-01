@@ -49,11 +49,19 @@ class Command(BaseCommand):
         )
 
         for participante in participantes:
-            shutil.copy2(
-                participante.cv.path,
-                ruta_salida
-                + participante.correo.replace("@", "-").replace(".", "-")
-                + ".pdf",
-            )
+            try:
+                src = participante.cv.path
+                dst = (
+                    ruta_salida
+                    + participante.correo.replace("@", "-").replace(".", "-")
+                    + ".pdf"
+                )
+                shutil.copy2(src, dst)
+            except ValueError:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f"El participante {participante.correo} no tiene CV!"
+                    )
+                )
 
         self.stdout.write(self.style.SUCCESS(f"CVs exportados!"))
