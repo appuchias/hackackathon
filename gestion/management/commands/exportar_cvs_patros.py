@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
         participantes = Participante.objects.filter(quiere_creditos=True)
         if not options.get("all"):
-            participantes = Participante.objects.filter(acreditacion__isnull=False)
+            participantes = participantes.filter(acreditacion__isnull=False)
 
         if not participantes.exists():
             self.stdout.write(self.style.ERROR("Ningún CV que exportar"))
