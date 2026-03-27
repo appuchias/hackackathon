@@ -16,6 +16,10 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from gestion.forms import (
     ColaboradorForm,
@@ -48,6 +52,11 @@ from gestion.utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter())
+)
 
 
 def es_token(token: str) -> bool:

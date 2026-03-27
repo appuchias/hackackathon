@@ -6,8 +6,23 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 load_dotenv()
+
+# OpenTelemetry
+DjangoInstrumentor().instrument()
+trace.set_tracer_provider(
+    TracerProvider(resource=Resource.create({"service.name": "hackackathon"}))
+)
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint="0.0.0.0:4318"))
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
